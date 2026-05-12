@@ -33,3 +33,7 @@ For a private source repository, add `DOCS_REPO_TOKEN` in Vercel project environ
 
 The homepage hero layout and illustration are adapted from
 [Material for MkDocs](https://github.com/squidfunk/mkdocs-material), licensed under MIT.
+
+The homepage aurora landscape photo is by
+[Jonny Gios on Unsplash](https://unsplash.com/photos/2vVhfhbj5-s),
+licensed under the Unsplash License.
