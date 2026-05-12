@@ -11,7 +11,13 @@
     left: "深耕机器人技术",
     right: "共建智能未来",
     center: "Robotics Tutorial",
+    firework_lines: [
+      "达妙科技",
+      "发来贺电",
+    ],
   };
+  const MIXED_MODES = ["rocket", "banner", "couplet"];
+  const AVAILABLE_MODES = new Set([...MIXED_MODES, "firework"]);
 
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const random = (min, max) => min + Math.random() * Math.max(max - min, 0);
@@ -26,6 +32,11 @@
     "\"": "&quot;",
     "'": "&#39;",
   })[char]);
+  const asLines = (value, fallback) => {
+    const source = Array.isArray(value) ? value : String(value ?? "").split("|");
+    const lines = source.map((line) => String(line).trim()).filter(Boolean);
+    return (lines.length ? lines : fallback).slice(0, 3);
+  };
 
   let root;
   let showTimer;
@@ -76,11 +87,16 @@
 
   const chooseMode = (mode) => {
     if (mode === "mixed") {
+      const selected = MIXED_MODES[modeIndex % MIXED_MODES.length];
       modeIndex += 1;
-      return modeIndex % 2 === 0 ? "couplet" : "banner";
+      return selected;
     }
 
-    return mode === "couplet" ? "couplet" : "banner";
+    if (mode === "firework") {
+      return "rocket";
+    }
+
+    return AVAILABLE_MODES.has(mode) ? mode : "banner";
   };
 
   const placeRoot = () => {
@@ -89,11 +105,12 @@
     }
 
     const side = Math.random() > 0.5 ? "right" : "left";
-    const edge = Math.round(random(18, 74));
+    const isRocket = root.classList.contains("company-promo--rocket");
+    const edge = Math.round(isRocket ? random(132, 176) : random(18, 74));
     const header = document.querySelector(".md-header");
     const headerHeight = header?.getBoundingClientRect().height || 64;
     const rootHeight = root.offsetHeight || 184;
-    const burstPadding = 116;
+    const burstPadding = isRocket ? 132 : 116;
     const minTop = headerHeight + burstPadding;
     const maxTop = Math.max(minTop, window.innerHeight - rootHeight - burstPadding);
     const top = Math.round(random(minTop, maxTop));
@@ -105,12 +122,20 @@
   };
 
   const render = (config) => {
+    const fireworkLines = asLines(config.firework_lines, DEFAULT_CONFIG.firework_lines)
+      .map((line) => `<span>${escapeHtml(line)}</span>`)
+      .join("");
+
     root = document.createElement("aside");
     root.className = "company-promo";
     root.setAttribute("aria-live", "polite");
     root.setAttribute("aria-label", config.title);
     root.innerHTML = `
       <div class="company-promo__burst" aria-hidden="true"></div>
+      <div class="company-promo__rocket-stage" aria-hidden="true">
+        <span class="company-promo__rocket-trail"></span>
+        <span class="company-promo__rocket"></span>
+      </div>
       <div class="company-promo__panel">
         <button class="company-promo__close" type="button" aria-label="关闭宣传提示">×</button>
         <div class="company-promo__banner">
@@ -123,6 +148,9 @@
           <span class="company-promo__couplet-side">${escapeHtml(config.left)}</span>
           <strong class="company-promo__couplet-center">${escapeHtml(config.center)}</strong>
           <span class="company-promo__couplet-side">${escapeHtml(config.right)}</span>
+        </div>
+        <div class="company-promo__firework">
+          ${fireworkLines}
         </div>
       </div>
     `;
@@ -150,7 +178,7 @@
     const mode = chooseMode(config.mode);
 
     window.clearTimeout(hideTimer);
-    root.classList.remove("is-active", "company-promo--banner", "company-promo--couplet");
+    root.classList.remove("is-active", "company-promo--banner", "company-promo--couplet", "company-promo--rocket");
     root.classList.add(`company-promo--${mode}`);
     placeRoot();
     void root.offsetWidth;

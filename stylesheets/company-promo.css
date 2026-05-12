@@ -24,6 +24,66 @@
   opacity: 1;
 }
 
+.company-promo--rocket {
+  width: clamp(18rem, 28vw, 24rem);
+  min-height: 18rem;
+}
+
+.company-promo__rocket-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.company-promo--rocket .company-promo__rocket-stage {
+  display: block;
+}
+
+.company-promo__rocket,
+.company-promo__rocket-trail {
+  position: absolute;
+  left: 50%;
+  pointer-events: none;
+}
+
+.company-promo__rocket {
+  bottom: 1.1rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fff 0 22%, #fff0a7 24% 48%, #ff7a42 50% 72%, rgba(255, 122, 66, 0) 74%);
+  box-shadow:
+    0 0 0.8rem rgba(255, 232, 137, 0.95),
+    0 0 1.5rem rgba(255, 121, 66, 0.58);
+  opacity: 0;
+  transform: translate3d(-50%, 0, 0) scale(0.7);
+}
+
+.company-promo__rocket-trail {
+  bottom: 0.72rem;
+  width: 0.22rem;
+  height: 11.6rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 244, 188, 0), rgba(255, 207, 91, 0.9) 16%, rgba(255, 111, 64, 0.62) 54%, rgba(90, 246, 232, 0) 100%);
+  filter: blur(0.5px);
+  opacity: 0;
+  transform: translate3d(-50%, 0, 0) scaleY(0.08);
+  transform-origin: bottom center;
+}
+
+.company-promo--rocket.is-active .company-promo__rocket {
+  animation: company-promo-rocket-launch 1.38s cubic-bezier(0.18, 0.72, 0.18, 1) both;
+}
+
+.company-promo--rocket.is-active .company-promo__rocket-trail {
+  animation: company-promo-rocket-trail 1.38s cubic-bezier(0.18, 0.72, 0.18, 1) both;
+}
+
 .company-promo__burst {
   position: absolute;
   z-index: 3;
@@ -94,6 +154,26 @@
   animation: company-promo-firework 1.35s var(--promo-particle-delay) cubic-bezier(0.12, 0.74, 0.2, 1) both;
 }
 
+.company-promo--rocket .company-promo__burst {
+  top: 3.95rem;
+}
+
+.company-promo--rocket.is-active .company-promo__burst {
+  animation: company-promo-burst-core 1.62s 1.16s ease-out both;
+}
+
+.company-promo--rocket.is-active .company-promo__burst::before {
+  animation: company-promo-burst-ring 1.18s 1.24s ease-out both;
+}
+
+.company-promo--rocket.is-active .company-promo__burst::after {
+  animation: company-promo-burst-ring 1.32s 1.34s ease-out both;
+}
+
+.company-promo--rocket.is-active .company-promo__burst span {
+  animation: company-promo-firework 1.6s calc(1.18s + var(--promo-particle-delay)) cubic-bezier(0.12, 0.74, 0.2, 1) both;
+}
+
 .company-promo__panel {
   position: relative;
   z-index: 2;
@@ -125,6 +205,26 @@
   animation: company-promo-couplet-shell 700ms 260ms cubic-bezier(0.16, 0.84, 0.22, 1) both;
 }
 
+.company-promo--rocket .company-promo__panel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 7.4rem;
+  border-color: rgba(255, 239, 179, 0.52);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 216, 118, 0.24), transparent 54%),
+    linear-gradient(135deg, rgba(8, 36, 64, 0.88), rgba(12, 88, 94, 0.84) 54%, rgba(44, 28, 74, 0.86));
+  box-shadow:
+    0 1rem 2.2rem rgba(0, 17, 34, 0.26),
+    0 0 2rem rgba(95, 239, 226, 0.18),
+    inset 0 0 1.6rem rgba(255, 228, 143, 0.1);
+}
+
+.company-promo--rocket.is-active .company-promo__panel {
+  animation: company-promo-firework-panel 900ms 1.86s cubic-bezier(0.16, 0.84, 0.22, 1) both;
+}
+
 .company-promo__panel::before,
 .company-promo__panel::after {
   position: absolute;
@@ -143,6 +243,10 @@
 
 .company-promo.is-active .company-promo__panel::before {
   animation: company-promo-shine 1.6s 1.08s ease-out both;
+}
+
+.company-promo--rocket.is-active .company-promo__panel::before {
+  animation: company-promo-shine 1.6s 2.26s ease-out both;
 }
 
 .company-promo__panel::after {
@@ -174,7 +278,8 @@
 }
 
 .company-promo__banner,
-.company-promo__couplet {
+.company-promo__couplet,
+.company-promo__firework {
   position: relative;
   display: none;
 }
@@ -242,6 +347,54 @@
   color: #ffe0a2;
   font-size: 0.72rem;
   font-weight: 700;
+}
+
+.company-promo--rocket .company-promo__firework {
+  display: grid;
+  min-height: 7.4rem;
+  align-content: center;
+  gap: 0.24rem;
+  padding: 1.1rem 2.2rem 1.1rem 1.15rem;
+  text-align: center;
+}
+
+.company-promo__firework span {
+  display: block;
+  color: #fff9df;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.38;
+  opacity: 0;
+  text-shadow:
+    0 0 0.85rem rgba(255, 224, 128, 0.48),
+    0 0 1.4rem rgba(104, 246, 235, 0.24);
+  transform: translate3d(0, 0.62rem, 0) scale(0.94);
+}
+
+.company-promo__firework span:first-child {
+  color: #fff;
+  font-size: 1.02rem;
+}
+
+.company-promo__firework span:last-child {
+  color: #ffe6a7;
+  font-size: 0.78rem;
+}
+
+.company-promo--rocket.is-active .company-promo__firework span {
+  animation: company-promo-firework-text 680ms cubic-bezier(0.16, 0.84, 0.28, 1) both;
+}
+
+.company-promo--rocket.is-active .company-promo__firework span:nth-child(1) {
+  animation-delay: 2.18s;
+}
+
+.company-promo--rocket.is-active .company-promo__firework span:nth-child(2) {
+  animation-delay: 2.36s;
+}
+
+.company-promo--rocket.is-active .company-promo__firework span:nth-child(3) {
+  animation-delay: 2.54s;
 }
 
 .company-promo--couplet .company-promo__couplet {
@@ -334,6 +487,49 @@
   }
 }
 
+@keyframes company-promo-rocket-launch {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 0, 0) scale(0.52);
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  76% {
+    opacity: 1;
+    transform: translate3d(-50%, -10.8rem, 0) scale(0.86);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -12.3rem, 0) scale(0.24);
+  }
+}
+
+@keyframes company-promo-rocket-trail {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 0, 0) scaleY(0.08);
+  }
+
+  18% {
+    opacity: 0.86;
+    transform: translate3d(-50%, 0, 0) scaleY(0.28);
+  }
+
+  72% {
+    opacity: 0.72;
+    transform: translate3d(-50%, -6.9rem, 0) scaleY(0.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -10.8rem, 0) scaleY(0.16);
+  }
+}
+
 @keyframes company-promo-burst-core {
   0% {
     opacity: 0;
@@ -405,6 +601,26 @@
   }
 }
 
+@keyframes company-promo-firework-panel {
+  0% {
+    clip-path: circle(5% at 50% 0%);
+    opacity: 0;
+    filter: blur(8px) saturate(1.18);
+    transform: translate3d(0, -0.38rem, 0) scale(0.72);
+  }
+
+  68% {
+    opacity: 1;
+  }
+
+  100% {
+    clip-path: circle(145% at 50% 0%);
+    opacity: 1;
+    filter: blur(0) saturate(1);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 @keyframes company-promo-text-reveal {
   0% {
     opacity: 0;
@@ -414,6 +630,18 @@
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes company-promo-firework-text {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.62rem, 0) scale(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -462,6 +690,10 @@
     grid-template-columns: 1fr;
   }
 
+  .company-promo--rocket {
+    min-height: 16rem;
+  }
+
   .company-promo__couplet-side,
   .company-promo__couplet-center {
     min-height: auto;
@@ -472,6 +704,8 @@
 @media (prefers-reduced-motion: reduce) {
   .company-promo,
   .company-promo__panel::before,
+  .company-promo__rocket,
+  .company-promo__rocket-trail,
   .company-promo__burst span {
     animation: none;
     transition: none;
