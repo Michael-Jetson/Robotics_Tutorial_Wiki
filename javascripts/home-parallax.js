@@ -29,6 +29,10 @@
       root.style.setProperty("--robotics-grid-y", `${(-46 * progress).toFixed(3)}vh`);
       root.style.setProperty("--robotics-near-y", `${(-68 * progress).toFixed(3)}vh`);
       root.style.setProperty("--robotics-title-y", `${(-17 * progress).toFixed(3)}vh`);
+      root.style.setProperty("--robotics-star-x", `${(-8 * progress).toFixed(3)}vw`);
+      root.style.setProperty("--robotics-nebula-x", `${(-4 * progress).toFixed(3)}vw`);
+      root.style.setProperty("--robotics-aurora-x", `${(10 * progress).toFixed(3)}vw`);
+      root.style.setProperty("--robotics-moon-y", `${(-12 * progress).toFixed(3)}vh`);
       root.style.setProperty("--robotics-shade-opacity", dim.toFixed(4));
       root.style.setProperty("--robotics-solid-opacity", solid.toFixed(4));
       root.style.setProperty("--robotics-content-opacity", content.toFixed(4));
