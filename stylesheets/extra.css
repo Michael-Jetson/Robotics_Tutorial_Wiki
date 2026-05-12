@@ -50,7 +50,7 @@
   --robotics-content-opacity: 1;
   --robotics-robot-scale: 1;
   position: relative;
-  min-height: 178vh;
+  min-height: 128vh;
   overflow: hidden;
   background: var(--md-default-bg-color);
 }
@@ -757,7 +757,7 @@
 @media screen and (max-width: 59.984375em) {
   .robotics-parallax {
     --robotics-content-offset-y: -1.25rem;
-    min-height: 168vh;
+    min-height: 136vh;
   }
 
   .robotics-parallax__sticky {

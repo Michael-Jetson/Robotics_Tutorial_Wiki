@@ -160,37 +160,37 @@ hide:
 
 <div class="grid cards" markdown>
 
--   :material-function-variant: **数学基础**
+-   **数学基础**
 
     流形、李群、凸优化、最优控制、状态估计、强化学习理论。
 
     [进入模块](01_数学/数学方向总大纲.md)
 
--   :material-code-braces: **工程基础**
+-   **工程基础**
 
     C++ 进阶、并发、ROS2、CMake、工程化与机器人软件栈。
 
     [进入模块](02_基础/C++基础方向_总大纲.md)
 
--   :material-map-marker-path: **SLAM**
+-   **SLAM**
 
     SLAM 理论、核心库、系统精读、架构与工程化实践。
 
     [进入模块](03_SLAM/slam理论.md)
 
--   :material-routes: **移动机器人规控**
+-   **移动机器人规控**
 
     规划、控制、TAMP、不确定性、多机器人与横切专题。
 
     [进入模块](04_移动机器人规控/移动机器人规控方向_总大纲.md)
 
--   :material-robot-industrial: **运动控制**
+-   **运动控制**
 
     足式、机械臂、复合机器人、仿真与实时控制工程。
 
     [进入模块](05_运动控制/运动控制方向_总大纲.md)
 
--   :material-brain: **具身智能**
+-   **具身智能**
 
     大模型、世界模型、VLA、动作模仿与强化学习。
 
