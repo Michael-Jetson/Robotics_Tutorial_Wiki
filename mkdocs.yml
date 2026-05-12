@@ -102,10 +102,10 @@ extra_javascript:
 extra:
   company_promo:
     enabled: true
-    mode: mixed
+    mode: rocket
     initial_delay_seconds: 4
     interval_seconds: 16
-    duration_seconds: 6.4
+    duration_seconds: 7.2
     title: 机器人体系化教学文档
     subtitle: 智能机器人教学与工程实践
     slogan: 体系化学习，工程化成长
@@ -114,7 +114,6 @@ extra:
     center: Robotics Tutorial
     firework_lines:
       - 达妙科技
-      - 发来贺电
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Michael-Jetson/Robotics_Tutorial
