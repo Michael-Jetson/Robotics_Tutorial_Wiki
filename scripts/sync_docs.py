@@ -319,7 +319,7 @@ def render_catalog_items(items: list[SummaryNode], level: int = 0) -> list[str]:
             title = escape(item.title)
             lines.append(
                 f'- <span class="robotics-catalog-missing">{title}'
-                ' <span class="robotics-catalog-badge">未完待续</span></span>'
+                ' <span class="robotics-catalog-badge">敬请期待</span></span>'
             )
             continue
 

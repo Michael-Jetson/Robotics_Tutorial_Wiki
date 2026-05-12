@@ -91,13 +91,27 @@ markdown_extensions:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/company-promo.css
 
 extra_javascript:
   - javascripts/mathjax.js
   - javascripts/home-parallax.js
+  - javascripts/company-promo.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 extra:
+  company_promo:
+    enabled: true
+    mode: mixed
+    initial_delay_seconds: 4
+    interval_seconds: 16
+    duration_seconds: 6.4
+    title: 机器人体系化教学文档
+    subtitle: 智能机器人教学与工程实践
+    slogan: 体系化学习，工程化成长
+    left: 深耕机器人技术
+    right: 共建智能未来
+    center: Robotics Tutorial
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Michael-Jetson/Robotics_Tutorial

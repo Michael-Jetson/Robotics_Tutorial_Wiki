@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+  {% if config.extra.company_promo %}
+    <script id="robotics-company-promo-config" type="application/json">
+      {{- config.extra.company_promo | tojson -}}
+    </script>
+  {% endif %}
+  {{ super() }}
+{% endblock %}
