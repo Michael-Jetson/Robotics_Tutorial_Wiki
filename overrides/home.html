@@ -25,10 +25,17 @@
     }
   </style>
 
-  <section class="robotics-home">
-    <div class="md-grid md-typeset">
-      <div class="robotics-home__hero">
-        <div class="robotics-home__image" aria-hidden="true">
+  <section class="robotics-parallax" data-robotics-parallax>
+    <div class="robotics-parallax__sticky">
+      <div class="robotics-parallax__scene" aria-hidden="true">
+        <div class="robotics-parallax__sky"></div>
+        <div class="robotics-parallax__sun"></div>
+        <div class="robotics-parallax__stars"></div>
+        <div class="robotics-parallax__mountains robotics-parallax__mountains--back"></div>
+        <div class="robotics-parallax__mountains robotics-parallax__mountains--front"></div>
+        <div class="robotics-parallax__grid"></div>
+        <div class="robotics-parallax__platform"></div>
+        <div class="robotics-parallax__robot">
           <img
             src="{{ 'assets/images/illustration.png' | url }}"
             alt=""
@@ -37,9 +44,11 @@
             draggable="false"
           >
         </div>
+      </div>
 
-        <div class="robotics-home__content">
-          <p class="robotics-home__eyebrow">Robotics Tutorial</p>
+      <div class="md-grid md-typeset">
+        <div class="robotics-parallax__content">
+          <p class="robotics-parallax__eyebrow">Robotics Tutorial</p>
           <h1>
             <span>机器人体系化</span>
             <span>教学文档</span>
@@ -48,7 +57,7 @@
             从数学基础、C++/ROS2、SLAM、规划控制、运动控制到具身智能，
             构建一套可检索、可扩展、适合长期学习的机器人知识体系。
           </p>
-          <div class="robotics-home__actions">
+          <div class="robotics-parallax__actions">
             <a href="{{ 'catalog/' | url }}" class="md-button md-button--primary">
               浏览目录
             </a>
@@ -61,6 +70,8 @@
           </div>
         </div>
       </div>
+
+      <div class="robotics-parallax__shade" aria-hidden="true"></div>
     </div>
   </section>
 {% endblock %}
