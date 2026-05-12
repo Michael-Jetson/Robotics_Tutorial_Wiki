@@ -40,6 +40,7 @@
   --robotics-near-y: 0vh;
   --robotics-grid-y: 0vh;
   --robotics-title-y: 0vh;
+  --robotics-content-offset-y: -6vh;
   --robotics-shade-opacity: 0;
   --robotics-solid-opacity: 0;
   --robotics-content-opacity: 1;
@@ -232,7 +233,7 @@
   height: 100%;
   color: #fff;
   opacity: var(--robotics-content-opacity);
-  transform: translate3d(0, var(--robotics-title-y), 0);
+  transform: translate3d(0, calc(var(--robotics-title-y) + var(--robotics-content-offset-y)), 0);
 }
 
 .robotics-parallax__eyebrow {
@@ -296,6 +297,7 @@
 
 @media screen and (max-width: 59.984375em) {
   .robotics-parallax {
+    --robotics-content-offset-y: -1.25rem;
     min-height: 190vh;
   }
 
