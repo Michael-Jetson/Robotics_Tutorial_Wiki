@@ -13,7 +13,6 @@ theme:
   features:
     - navigation.tabs
     - navigation.sections
-    - navigation.expand
     - navigation.indexes
     - navigation.top
     - navigation.footer

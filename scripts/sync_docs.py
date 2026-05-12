@@ -211,16 +211,6 @@ hide:
     )
 
 
-def write_catalog(source: Path) -> None:
-    summary = source / "SUMMARY.md"
-    if not summary.exists():
-        return
-
-    catalog = summary.read_text(encoding="utf-8")
-    catalog = catalog.replace("(README.md)", "(project.md)")
-    (DOCS_DIR / "catalog.md").write_text(catalog, encoding="utf-8")
-
-
 SUMMARY_HEADING = re.compile(r"^##\s+(.+?)\s*$")
 SUMMARY_ITEM = re.compile(r"^(\s*)\*\s+(?:\[([^\]]+)\]\(([^)]+)\)|(.+?))\s*$")
 
@@ -284,6 +274,49 @@ def parse_summary(source: Path) -> list[dict[str, object]]:
     return nav
 
 
+def link_target(target: str) -> str:
+    if target == "README.md":
+        return "project.md"
+    return target
+
+
+def render_catalog_items(items: list[dict[str, object]], level: int = 0) -> list[str]:
+    lines: list[str] = []
+    details_class = "robotics-catalog-section" if level == 0 else "robotics-catalog-group"
+
+    for item in items:
+        title, value = next(iter(item.items()))
+        if isinstance(value, list):
+            details_attrs = f'class="{details_class}" markdown'
+            if level == 0:
+                details_attrs += " open"
+            lines.extend(
+                [
+                    f"<details {details_attrs}>",
+                    f"<summary>{title}</summary>",
+                    "",
+                ]
+            )
+            lines.extend(render_catalog_items(value, level + 1))
+            lines.extend(["", "</details>", ""])
+            continue
+
+        lines.append(f"- [{title}]({link_target(str(value))})")
+
+    return lines
+
+
+def write_catalog(nav: list[dict[str, object]]) -> None:
+    lines = [
+        "# 目录索引",
+        "",
+        "按课程模块折叠展示，展开模块后进入对应章节。",
+        "",
+        *render_catalog_items(nav),
+    ]
+    (DOCS_DIR / "catalog.md").write_text("\n".join(lines), encoding="utf-8")
+
+
 def generate_config(nav: list[dict[str, object]]) -> None:
     base = yaml.load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"), Loader=yaml.Loader)
     base["nav"] = [{"首页": "index.md"}, {"项目说明": "project.md"}, {"目录索引": "catalog.md"}, *nav]
@@ -298,8 +331,9 @@ def main() -> None:
     markdown_count, asset_count = copy_docs(source)
     copy_site_assets()
     write_home(markdown_count, asset_count)
-    write_catalog(source)
-    generate_config(parse_summary(source))
+    nav = parse_summary(source)
+    write_catalog(nav)
+    generate_config(nav)
     print(f"Synced {markdown_count} markdown files and {asset_count} assets from {source}")
 
 
