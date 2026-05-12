@@ -48,10 +48,9 @@
   --robotics-shade-opacity: 0;
   --robotics-solid-opacity: 0;
   --robotics-content-opacity: 1;
-  --robotics-scene-scale: 1;
   --robotics-robot-scale: 1;
   position: relative;
-  min-height: 215vh;
+  min-height: 178vh;
   overflow: hidden;
   background: var(--md-default-bg-color);
 }
@@ -67,6 +66,7 @@
   height: 100vh;
   overflow: hidden;
   isolation: isolate;
+  contain: paint;
   background: var(--robotics-hero-solid);
 }
 
@@ -90,8 +90,27 @@
   z-index: 1;
   inset: 0;
   overflow: hidden;
-  transform: scale(var(--robotics-scene-scale));
+  contain: paint;
+  transform: translate3d(0, 0, 0);
   transform-origin: 50% 70%;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.robotics-parallax__sky,
+.robotics-parallax__nebula,
+.robotics-parallax__aurora,
+.robotics-parallax__horizon-glow,
+.robotics-parallax__sun,
+.robotics-parallax__stars,
+.robotics-parallax__meteor,
+.robotics-parallax__mountains,
+.robotics-parallax__grid,
+.robotics-parallax__platform,
+.robotics-parallax__robot {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .robotics-parallax__sky {
@@ -102,14 +121,16 @@
     linear-gradient(180deg, rgba(2, 4, 18, 0.24), rgba(6, 13, 38, 0.12) 45%, rgba(2, 7, 22, 0.72) 100%),
     url("../assets/images/hero-aurora.jpg") center / cover no-repeat,
     linear-gradient(145deg, #02000d 0%, #0b0320 34%, #071f54 78%, #001a2b 100%);
-  transform: translate3d(var(--robotics-nebula-x), var(--robotics-far-y), 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .robotics-parallax__sky::before,
 .robotics-parallax__sky::after {
   position: absolute;
   content: "";
+  backface-visibility: hidden;
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 .robotics-parallax__sky::before {
@@ -118,9 +139,9 @@
   background:
     linear-gradient(108deg, transparent 0 16%, rgba(0, 255, 214, 0.24) 29%, rgba(79, 155, 255, 0.12) 43%, transparent 61%),
     linear-gradient(116deg, transparent 0 36%, rgba(255, 80, 220, 0.16) 49%, transparent 67%);
-  filter: blur(24px);
-  opacity: 0.58;
-  transform: translate3d(var(--robotics-aurora-x), 0, 0) skewY(-8deg);
+  filter: blur(14px);
+  opacity: 0.42;
+  transform: translate3d(calc(var(--robotics-aurora-x) * 0.35), 0, 0) skewY(-8deg);
 }
 
 .robotics-parallax__sky::after {
@@ -129,9 +150,9 @@
   height: 112vh;
   background:
     linear-gradient(104deg, transparent 0 31%, rgba(255, 255, 255, 0.14) 43%, rgba(153, 218, 255, 0.1) 51%, rgba(255, 93, 220, 0.08) 56%, transparent 68%);
-  filter: blur(12px);
-  opacity: 0.38;
-  transform: translate3d(calc(var(--robotics-star-x) * 0.45), 0, 0) rotate(8deg);
+  filter: blur(6px);
+  opacity: 0.28;
+  transform: translate3d(calc(var(--robotics-star-x) * 0.2), 0, 0) rotate(8deg);
 }
 
 [data-md-color-scheme="slate"] .robotics-parallax__sky {
@@ -143,9 +164,8 @@
 }
 
 .robotics-parallax__nebula {
-  mix-blend-mode: screen;
   opacity: 0.52;
-  filter: blur(32px) saturate(1.25);
+  filter: blur(18px) saturate(1.12);
 }
 
 .robotics-parallax__nebula--one {
@@ -159,7 +179,7 @@
     radial-gradient(ellipse at 66% 36%, rgba(255, 74, 204, 0.3), transparent 34%),
     radial-gradient(ellipse at 34% 68%, rgba(112, 82, 255, 0.32), transparent 38%),
     radial-gradient(ellipse at 58% 72%, rgba(0, 247, 213, 0.18), transparent 34%);
-  transform: translate3d(calc(var(--robotics-nebula-x) * 1.2), calc(var(--robotics-far-y) * 0.8), 0) rotate(-12deg);
+  transform: translate3d(calc(var(--robotics-nebula-x) * 0.35), calc(var(--robotics-far-y) * 0.25), 0) rotate(-12deg);
 }
 
 .robotics-parallax__nebula--two {
@@ -174,7 +194,7 @@
     radial-gradient(ellipse at 72% 54%, rgba(255, 80, 172, 0.34), transparent 42%),
     radial-gradient(ellipse at 52% 70%, rgba(101, 72, 255, 0.42), transparent 42%);
   opacity: 0.44;
-  transform: translate3d(calc(var(--robotics-nebula-x) * -0.7), calc(var(--robotics-far-y) * 0.6), 0) rotate(14deg);
+  transform: translate3d(calc(var(--robotics-nebula-x) * -0.25), calc(var(--robotics-far-y) * 0.2), 0) rotate(14deg);
 }
 
 .robotics-parallax__aurora {
@@ -186,10 +206,9 @@
     linear-gradient(101deg, transparent 0 7%, rgba(68, 255, 206, 0.22) 15%, rgba(87, 121, 255, 0.18) 24%, transparent 39%),
     linear-gradient(116deg, transparent 0 30%, rgba(255, 90, 216, 0.24) 42%, rgba(96, 227, 255, 0.2) 52%, transparent 72%),
     linear-gradient(75deg, transparent 0 48%, rgba(255, 255, 255, 0.12) 51%, transparent 58%);
-  filter: blur(9px) saturate(1.5);
-  mix-blend-mode: screen;
-  opacity: 0.46;
-  transform: translate3d(var(--robotics-aurora-x), var(--robotics-far-y), 0) skewY(-9deg);
+  filter: blur(4px) saturate(1.15);
+  opacity: 0.34;
+  transform: translate3d(calc(var(--robotics-aurora-x) * 0.45), calc(var(--robotics-far-y) * 0.35), 0) skewY(-9deg);
 }
 
 .robotics-parallax__horizon-glow {
@@ -201,10 +220,9 @@
     radial-gradient(ellipse at 30% 70%, rgba(255, 80, 190, 0.18), transparent 34%),
     radial-gradient(ellipse at 68% 58%, rgba(0, 238, 255, 0.2), transparent 36%),
     linear-gradient(180deg, transparent, rgba(3, 244, 218, 0.13) 46%, rgba(13, 12, 56, 0.36));
-  filter: blur(7px);
-  mix-blend-mode: screen;
-  opacity: 0.58;
-  transform: translate3d(calc(var(--robotics-nebula-x) * 0.4), var(--robotics-mid-y), 0);
+  filter: blur(3px);
+  opacity: 0.42;
+  transform: translate3d(0, calc(var(--robotics-mid-y) * 0.45), 0);
 }
 
 .robotics-parallax__sun {
@@ -262,9 +280,50 @@
   width: 10rem;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.86), transparent);
-  opacity: 0.56;
+  opacity: 0.16;
   transform: rotate(-24deg);
-  animation: robotics-meteor 7s ease-in-out infinite;
+}
+
+.robotics-parallax__meteor {
+  z-index: 1;
+  width: 11rem;
+  height: 2px;
+  border-radius: 999rem;
+  background:
+    radial-gradient(circle at 0 50%, rgba(255, 255, 255, 0.98) 0 2px, transparent 3px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(145, 225, 255, 0.62) 42%, transparent 100%);
+  box-shadow: 0 0 0.7rem rgba(160, 230, 255, 0.46);
+  opacity: 0;
+  transform: translate3d(8rem, -4rem, 0) rotate(-25deg) scaleX(0.72);
+}
+
+.robotics-parallax__meteor--one {
+  top: 16vh;
+  left: 68vw;
+}
+
+.robotics-parallax__meteor--two {
+  top: 25vh;
+  left: 78vw;
+  width: 8.5rem;
+}
+
+.robotics-parallax__meteor--three {
+  top: 11vh;
+  left: 51vw;
+  width: 7rem;
+}
+
+.robotics-parallax.is-robotics-scrolling .robotics-parallax__meteor--one {
+  animation: robotics-scroll-meteor 1.18s cubic-bezier(0.16, 0.74, 0.27, 1) infinite;
+}
+
+.robotics-parallax.is-robotics-scrolling .robotics-parallax__meteor--two {
+  animation: robotics-scroll-meteor 1.42s 0.18s cubic-bezier(0.16, 0.74, 0.27, 1) infinite;
+}
+
+.robotics-parallax.is-robotics-scrolling .robotics-parallax__meteor--three {
+  animation: robotics-scroll-meteor 1.28s 0.36s cubic-bezier(0.16, 0.74, 0.27, 1) infinite;
 }
 
 .robotics-parallax__mountains {
@@ -314,7 +373,7 @@
 
 .robotics-parallax__platform {
   right: -12vw;
-  bottom: -24vh;
+  bottom: -31vh;
   left: -12vw;
   height: 38vh;
   border-radius: 50% 50% 0 0;
@@ -333,19 +392,278 @@
 }
 
 .robotics-parallax__robot {
-  right: max(1rem, 7vw);
-  bottom: 3vh;
-  width: min(47rem, 48vw);
+  right: max(1rem, 6vw);
+  bottom: 5vh;
+  width: min(39rem, 42vw);
+  aspect-ratio: 1.16;
+  filter: drop-shadow(0 1rem 1.5rem rgba(1, 22, 36, 0.28));
   transform: translate3d(0, var(--robotics-near-y), 0) scale(var(--robotics-robot-scale));
   transform-origin: 50% 100%;
 }
 
-.robotics-parallax__robot img {
-  display: block;
+.robotics-orbital {
+  position: relative;
   width: 100%;
-  height: auto;
-  filter: drop-shadow(0 1.3rem 2rem rgba(1, 34, 40, 0.26));
-  user-select: none;
+  height: 100%;
+  animation: robotics-orbital-float 8s ease-in-out infinite;
+}
+
+.robotics-orbital > * {
+  position: absolute;
+  pointer-events: none;
+}
+
+.robotics-orbital__glow {
+  inset: 13% 4% 5% 3%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 58% 54%, rgba(121, 247, 231, 0.44), transparent 42%),
+    radial-gradient(ellipse at 41% 33%, rgba(255, 98, 214, 0.32), transparent 34%),
+    radial-gradient(ellipse at 65% 26%, rgba(109, 136, 255, 0.26), transparent 34%);
+  filter: blur(22px);
+  opacity: 0.78;
+}
+
+.robotics-orbital__ring {
+  border: 1px solid rgba(210, 247, 255, 0.42);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 1.2rem rgba(111, 245, 229, 0.12),
+    0 0 1.4rem rgba(111, 245, 229, 0.16);
+}
+
+.robotics-orbital__ring--outer {
+  inset: 7% 6% 18% 8%;
+  transform: rotate(-10deg) skewY(6deg);
+}
+
+.robotics-orbital__ring--inner {
+  inset: 23% 22% 32% 24%;
+  border-color: rgba(255, 211, 135, 0.48);
+  transform: rotate(18deg) skewY(-7deg);
+}
+
+.robotics-orbital__core {
+  top: 32%;
+  left: 43%;
+  width: 6.6rem;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 34%, rgba(255, 255, 255, 0.94) 0 8%, transparent 9%),
+    radial-gradient(circle, rgba(103, 243, 232, 0.96) 0 32%, rgba(40, 126, 211, 0.78) 33% 60%, rgba(12, 25, 65, 0.72) 61% 100%);
+  box-shadow:
+    0 0 1.8rem rgba(92, 239, 224, 0.44),
+    inset 0 -0.8rem 1.4rem rgba(3, 11, 35, 0.26);
+}
+
+.robotics-orbital__core::before,
+.robotics-orbital__core::after {
+  position: absolute;
+  content: "";
+}
+
+.robotics-orbital__core::before {
+  inset: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 50%;
+}
+
+.robotics-orbital__core::after {
+  top: 2.05rem;
+  right: -1.55rem;
+  width: 2.25rem;
+  height: 0.32rem;
+  border-radius: 999rem;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.92), rgba(255, 183, 77, 0.84));
+  box-shadow: 0 0 0.8rem rgba(255, 183, 77, 0.34);
+  transform: rotate(-18deg);
+}
+
+.robotics-orbital__node {
+  width: 0.78rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff7d7;
+  box-shadow:
+    0 0 0.75rem rgba(255, 213, 128, 0.78),
+    0 0 1.4rem rgba(97, 239, 229, 0.28);
+  animation: robotics-node-pulse 3.6s ease-in-out infinite;
+}
+
+.robotics-orbital__node--one {
+  top: 14%;
+  left: 31%;
+}
+
+.robotics-orbital__node--two {
+  top: 27%;
+  right: 12%;
+  animation-delay: 0.8s;
+}
+
+.robotics-orbital__node--three {
+  right: 31%;
+  bottom: 19%;
+  animation-delay: 1.5s;
+}
+
+.robotics-orbital__panel {
+  width: 8.8rem;
+  height: 5.1rem;
+  border: 1px solid rgba(211, 247, 255, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(9, 33, 67, 0.55), rgba(7, 19, 43, 0.34)),
+    linear-gradient(90deg, rgba(121, 247, 231, 0.12), rgba(255, 183, 77, 0.1));
+  box-shadow:
+    0 1rem 1.8rem rgba(0, 0, 0, 0.18),
+    inset 0 0 1.5rem rgba(121, 247, 231, 0.09);
+  backdrop-filter: blur(7px);
+}
+
+.robotics-orbital__panel span {
+  display: block;
+  height: 0.34rem;
+  margin: 0.78rem 0.82rem 0;
+  border-radius: 999rem;
+  background: rgba(230, 250, 255, 0.76);
+}
+
+.robotics-orbital__panel span:nth-child(2) {
+  width: 58%;
+  background: rgba(121, 247, 231, 0.62);
+}
+
+.robotics-orbital__panel span:nth-child(3) {
+  width: 72%;
+  background: rgba(255, 183, 77, 0.64);
+}
+
+.robotics-orbital__panel--one {
+  top: 17%;
+  left: 6%;
+  transform: rotate(-8deg);
+}
+
+.robotics-orbital__panel--two {
+  top: 39%;
+  right: 0;
+  transform: rotate(7deg);
+}
+
+.robotics-orbital__rover {
+  right: 9%;
+  bottom: 5%;
+  width: 15rem;
+  height: 8rem;
+}
+
+.robotics-orbital__rover span,
+.robotics-orbital__body::before,
+.robotics-orbital__body::after,
+.robotics-orbital__mast::before,
+.robotics-orbital__arm::after {
+  position: absolute;
+  display: block;
+  content: "";
+}
+
+.robotics-orbital__body {
+  right: 1.6rem;
+  bottom: 2.35rem;
+  left: 2.8rem;
+  height: 2.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 1.1rem 1rem 0.72rem 0.72rem;
+  background:
+    linear-gradient(135deg, rgba(232, 249, 255, 0.98), rgba(117, 204, 220, 0.9) 54%, rgba(36, 85, 125, 0.92)),
+    linear-gradient(90deg, rgba(255, 183, 77, 0.28), transparent);
+  box-shadow: 0 0.65rem 1.25rem rgba(2, 14, 34, 0.24);
+  transform: skewX(-8deg);
+}
+
+.robotics-orbital__body::before {
+  top: 0.72rem;
+  left: 1rem;
+  width: 2.35rem;
+  height: 0.7rem;
+  border-radius: 999rem;
+  background: rgba(6, 35, 70, 0.76);
+  box-shadow: inset 0.72rem 0 0 rgba(121, 247, 231, 0.76);
+}
+
+.robotics-orbital__body::after {
+  right: 1.1rem;
+  bottom: 0.7rem;
+  width: 3.2rem;
+  height: 0.34rem;
+  border-radius: 999rem;
+  background: rgba(255, 183, 77, 0.8);
+}
+
+.robotics-orbital__mast {
+  left: 6.4rem;
+  bottom: 4.9rem;
+  width: 0.34rem;
+  height: 2.45rem;
+  border-radius: 999rem;
+  background: rgba(223, 248, 255, 0.9);
+  transform: rotate(-8deg);
+}
+
+.robotics-orbital__mast::before {
+  top: -0.72rem;
+  left: -0.66rem;
+  width: 1.72rem;
+  height: 1rem;
+  border-radius: 0.45rem;
+  background: linear-gradient(135deg, #f6fbff, #75d7e7);
+  box-shadow:
+    inset 0.52rem 0.28rem 0 rgba(8, 48, 88, 0.78),
+    0 0 0.8rem rgba(121, 247, 231, 0.28);
+}
+
+.robotics-orbital__arm {
+  right: 1rem;
+  bottom: 4.45rem;
+  width: 4.55rem;
+  height: 0.28rem;
+  border-radius: 999rem;
+  background: rgba(226, 248, 255, 0.86);
+  transform: rotate(-26deg);
+  transform-origin: left center;
+}
+
+.robotics-orbital__arm::after {
+  right: -0.3rem;
+  top: -0.36rem;
+  width: 0.78rem;
+  height: 0.78rem;
+  border: 0.2rem solid rgba(255, 183, 77, 0.9);
+  border-left-color: transparent;
+  border-radius: 50%;
+}
+
+.robotics-orbital__wheel {
+  bottom: 1.12rem;
+  width: 2.55rem;
+  aspect-ratio: 1;
+  border: 0.34rem solid rgba(8, 33, 64, 0.84);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(121, 247, 231, 0.9) 0 18%, transparent 19%),
+    radial-gradient(circle, rgba(235, 249, 255, 0.92) 0 48%, rgba(42, 83, 116, 0.9) 49% 100%);
+  box-shadow: 0 0 0.8rem rgba(121, 247, 231, 0.26);
+}
+
+.robotics-orbital__wheel--one {
+  left: 3.15rem;
+}
+
+.robotics-orbital__wheel--two {
+  right: 2rem;
 }
 
 .robotics-parallax__shade {
@@ -439,7 +757,7 @@
 @media screen and (max-width: 59.984375em) {
   .robotics-parallax {
     --robotics-content-offset-y: -1.25rem;
-    min-height: 190vh;
+    min-height: 168vh;
   }
 
   .robotics-parallax__sticky {
@@ -499,10 +817,10 @@
   }
 
   .robotics-parallax__robot {
-    right: -10rem;
-    bottom: -1vh;
-    width: 32rem;
-    opacity: 0.58;
+    right: -11rem;
+    bottom: 0;
+    width: 30rem;
+    opacity: 0.48;
   }
 }
 
@@ -517,21 +835,48 @@
   }
 }
 
-@keyframes robotics-meteor {
+@keyframes robotics-scroll-meteor {
   0%,
-  58%,
   100% {
     opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(-24deg);
+    transform: translate3d(8rem, -4rem, 0) rotate(-25deg) scaleX(0.72);
   }
 
-  63% {
-    opacity: 0.72;
-  }
-
-  74% {
+  12% {
     opacity: 0;
-    transform: translate3d(-12rem, 6rem, 0) rotate(-24deg);
+  }
+
+  28% {
+    opacity: 0.95;
+  }
+
+  84% {
+    opacity: 0;
+    transform: translate3d(-36rem, 18rem, 0) rotate(-25deg) scaleX(1);
+  }
+}
+
+@keyframes robotics-orbital-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -0.75rem, 0);
+  }
+}
+
+@keyframes robotics-node-pulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.84);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1.08);
   }
 }
 
@@ -561,4 +906,44 @@
 
 .md-typeset details.robotics-catalog-group > summary {
   font-size: 0.78rem;
+}
+
+.md-typeset .robotics-catalog-missing {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.38rem;
+  color: var(--md-default-fg-color--light);
+  opacity: 0.72;
+}
+
+.md-typeset .robotics-catalog-missing::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentcolor;
+  content: "";
+  opacity: 0.42;
+}
+
+.md-typeset .robotics-catalog-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.15rem;
+  padding: 0 0.42rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 999rem;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-fg-color--lightest);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robotics-orbital,
+  .robotics-orbital__node,
+  .robotics-parallax.is-robotics-scrolling .robotics-parallax__meteor {
+    animation: none;
+  }
 }

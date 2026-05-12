@@ -4,6 +4,8 @@ import os
 import re
 import shutil
 import subprocess
+from dataclasses import dataclass, field
+from html import escape
 from pathlib import Path
 
 import yaml
@@ -210,27 +212,35 @@ SUMMARY_HEADING = re.compile(r"^##\s+(.+?)\s*$")
 SUMMARY_ITEM = re.compile(r"^(\s*)\*\s+(?:\[([^\]]+)\]\(([^)]+)\)|(.+?))\s*$")
 
 
-def nav_item(title: str, target: str | None) -> dict[str, str] | dict[str, list]:
-    title = title.strip()
-    if target:
-        return {title: target.strip()}
-    return {title: []}
+@dataclass
+class SummaryNode:
+    title: str
+    target: str | None = None
+    missing: bool = False
+    children: list["SummaryNode"] = field(default_factory=list)
 
 
-def parse_summary(source: Path) -> list[dict[str, object]]:
+def link_target(target: str) -> str:
+    if target == "README.md":
+        return "project.md"
+    return target
+
+
+def parse_summary(source: Path) -> list[SummaryNode]:
     summary = source / "SUMMARY.md"
     if not summary.exists():
         return []
 
-    nav: list[dict[str, object]] = []
-    stack: list[tuple[int, list]] = []
+    catalog: list[SummaryNode] = []
+    stack: list[tuple[int, list[SummaryNode]]] = []
     missing: list[str] = []
 
     for line in summary.read_text(encoding="utf-8").splitlines():
         heading = SUMMARY_HEADING.match(line)
         if heading:
-            children: list = []
-            nav.append({heading.group(1).strip(): children})
+            node = SummaryNode(heading.group(1).strip())
+            catalog.append(node)
+            children = node.children
             stack = [(-1, children)]
             continue
 
@@ -245,69 +255,87 @@ def parse_summary(source: Path) -> list[dict[str, object]]:
         if target == "README.md" and indent == 0:
             continue
 
-        if target and not (DOCS_DIR / target).exists():
-            missing.append(target)
-            continue
-
         while stack and indent <= stack[-1][0]:
             stack.pop()
 
-        parent = stack[-1][1] if stack else nav
-        node = nav_item(title, target)
+        is_missing = bool(target and not (DOCS_DIR / link_target(target)).exists())
+        if target and is_missing:
+            missing.append(target)
+
+        parent = stack[-1][1] if stack else catalog
+        node = SummaryNode(title=title.strip(), target=target.strip() if target else None, missing=is_missing)
         parent.append(node)
 
         if target is None:
-            stack.append((indent, next(iter(node.values()))))
+            stack.append((indent, node.children))
 
     if missing:
-        print("Skipped missing SUMMARY.md targets:")
+        print("Missing SUMMARY.md targets shown as unfinished in catalog:")
         for target in missing[:50]:
             print(f"  - {target}")
         if len(missing) > 50:
             print(f"  ... {len(missing) - 50} more")
 
+    return catalog
+
+
+def build_navigation(items: list[SummaryNode]) -> list[dict[str, object]]:
+    nav: list[dict[str, object]] = []
+
+    for item in items:
+        if item.children:
+            children = build_navigation(item.children)
+            if children:
+                nav.append({item.title: children})
+            continue
+
+        if item.target and not item.missing:
+            nav.append({item.title: link_target(item.target)})
+
     return nav
 
 
-def link_target(target: str) -> str:
-    if target == "README.md":
-        return "project.md"
-    return target
-
-
-def render_catalog_items(items: list[dict[str, object]], level: int = 0) -> list[str]:
+def render_catalog_items(items: list[SummaryNode], level: int = 0) -> list[str]:
     lines: list[str] = []
     details_class = "robotics-catalog-section" if level == 0 else "robotics-catalog-group"
 
     for item in items:
-        title, value = next(iter(item.items()))
-        if isinstance(value, list):
+        if item.children:
             details_attrs = f'class="{details_class}" markdown'
             if level == 0:
                 details_attrs += " open"
             lines.extend(
                 [
                     f"<details {details_attrs}>",
-                    f"<summary>{title}</summary>",
+                    f"<summary>{escape(item.title)}</summary>",
                     "",
                 ]
             )
-            lines.extend(render_catalog_items(value, level + 1))
+            lines.extend(render_catalog_items(item.children, level + 1))
             lines.extend(["", "</details>", ""])
             continue
 
-        lines.append(f"- [{title}]({link_target(str(value))})")
+        if item.target and item.missing:
+            title = escape(item.title)
+            lines.append(
+                f'- <span class="robotics-catalog-missing">{title}'
+                ' <span class="robotics-catalog-badge">未完待续</span></span>'
+            )
+            continue
+
+        if item.target:
+            lines.append(f"- [{item.title}]({link_target(item.target)})")
 
     return lines
 
 
-def write_catalog(nav: list[dict[str, object]]) -> None:
+def write_catalog(catalog: list[SummaryNode]) -> None:
     lines = [
         "# 目录索引",
         "",
         "按课程模块折叠展示，展开模块后进入对应章节。",
         "",
-        *render_catalog_items(nav),
+        *render_catalog_items(catalog),
     ]
     (DOCS_DIR / "catalog.md").write_text("\n".join(lines), encoding="utf-8")
 
@@ -326,8 +354,9 @@ def main() -> None:
     markdown_count, asset_count = copy_docs(source)
     copy_site_assets()
     write_home(markdown_count, asset_count)
-    nav = parse_summary(source)
-    write_catalog(nav)
+    catalog = parse_summary(source)
+    nav = build_navigation(catalog)
+    write_catalog(catalog)
     generate_config(nav)
     print(f"Synced {markdown_count} markdown files and {asset_count} assets from {source}")
 

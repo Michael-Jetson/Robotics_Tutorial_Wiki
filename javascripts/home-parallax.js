@@ -15,6 +15,7 @@
     root.dataset.roboticsParallaxReady = "true";
 
     let ticking = false;
+    let scrollingTimer;
 
     const update = () => {
       const distance = Math.max(root.offsetHeight - window.innerHeight, 1);
@@ -36,8 +37,67 @@
       root.style.setProperty("--robotics-shade-opacity", dim.toFixed(4));
       root.style.setProperty("--robotics-solid-opacity", solid.toFixed(4));
       root.style.setProperty("--robotics-content-opacity", content.toFixed(4));
-      root.style.setProperty("--robotics-scene-scale", (1 + progress * 0.025).toFixed(4));
       root.style.setProperty("--robotics-robot-scale", (1 - progress * 0.08).toFixed(4));
+    };
+
+    const markScrolling = () => {
+      root.classList.add("is-robotics-scrolling");
+      window.clearTimeout(scrollingTimer);
+      scrollingTimer = window.setTimeout(() => {
+        root.classList.remove("is-robotics-scrolling");
+      }, 520);
+    };
+
+    const preservePaletteScroll = () => {
+      const palette = document.querySelector("[data-md-component='palette']");
+
+      if (!palette || palette.dataset.roboticsScrollGuard === "true") {
+        return;
+      }
+
+      palette.dataset.roboticsScrollGuard = "true";
+
+      let savedY = null;
+      let releaseTimer;
+
+      const save = () => {
+        savedY = window.scrollY;
+      };
+
+      const restore = () => {
+        if (savedY === null) {
+          return;
+        }
+
+        const y = savedY;
+        window.clearTimeout(releaseTimer);
+
+        [0, 32, 96, 180, 360, 700].forEach((delay) => {
+          window.setTimeout(() => {
+            window.scrollTo(window.scrollX, y);
+            requestUpdate();
+          }, delay);
+        });
+
+        releaseTimer = window.setTimeout(() => {
+          savedY = null;
+        }, 820);
+      };
+
+      palette.addEventListener("pointerdown", save, true);
+      palette.addEventListener("click", () => {
+        if (savedY === null) {
+          save();
+        }
+        window.setTimeout(restore, 0);
+      }, true);
+      palette.addEventListener("change", restore, true);
+      palette.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          save();
+          window.setTimeout(restore, 0);
+        }
+      }, true);
     };
 
     const requestUpdate = () => {
@@ -52,8 +112,12 @@
       });
     };
 
-    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("scroll", () => {
+      markScrolling();
+      requestUpdate();
+    }, { passive: true });
     window.addEventListener("resize", requestUpdate);
+    preservePaletteScroll();
     requestUpdate();
   };
 
