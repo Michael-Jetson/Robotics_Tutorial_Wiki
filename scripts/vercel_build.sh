@@ -13,5 +13,10 @@ if [ -e src/__init__.py ] || [ -e pyproject.toml ] || [ -e package.json ]; then
   exit 1
 fi
 
-python scripts/sync_docs.py
-python -m mkdocs build -f mkdocs.generated.yml
+PYTHON_BIN="${PYTHON_BIN:-python}"
+if [ -x ".venv/bin/python" ]; then
+  PYTHON_BIN=".venv/bin/python"
+fi
+
+"$PYTHON_BIN" scripts/sync_docs.py
+"$PYTHON_BIN" -m mkdocs build -f mkdocs.generated.yml

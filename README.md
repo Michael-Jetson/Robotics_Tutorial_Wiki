@@ -17,7 +17,7 @@ python -m mkdocs serve -f mkdocs.generated.yml
 Use the included `vercel.json`:
 
 - Framework Preset: `Other`
-- Install Command: `python -m pip install -r requirements.txt`
+- Install Command: `python -m venv .venv && .venv/bin/python -m pip install -r requirements.txt`
 - Build Command: `bash scripts/vercel_build.sh`
 - Output Directory: `site`
 
