@@ -28,3 +28,8 @@ https://github.com/Michael-Jetson/Robotics_Tutorial.git
 ```
 
 For a private source repository, add `DOCS_REPO_TOKEN` in Vercel project environment variables.
+
+## Credits
+
+The homepage hero layout and illustration are adapted from
+[Material for MkDocs](https://github.com/squidfunk/mkdocs-material), licensed under MIT.

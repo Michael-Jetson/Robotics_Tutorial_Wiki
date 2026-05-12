@@ -2,6 +2,8 @@
   --md-primary-fg-color: #00796b;
   --md-accent-fg-color: #f57c00;
   --robotics-page-max-width: 1680px;
+  --robotics-hero-wave: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(0, 0%, 100%, 1)' /></svg>");
+  --robotics-hero-wave-dark: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1123 258'><path d='M1124,2c0,0 0,256 0,256l-1125,0l0,-48c0,0 16,5 55,5c116,0 197,-92 325,-92c121,0 114,46 254,46c140,0 214,-167 572,-166Z' style='fill: hsla(230, 15%, 14%, 1)' /></svg>");
 }
 
 .md-grid {
@@ -31,6 +33,168 @@
 
 .md-typeset .arithmatex {
   overflow-x: auto;
+}
+
+.robotics-home {
+  overflow: hidden;
+  padding-top: 1rem;
+  background:
+    var(--robotics-hero-wave) no-repeat bottom / 100% auto,
+    linear-gradient(145deg, #00796b 0%, #12617b 46%, #9c3fb8 100%);
+}
+
+[data-md-color-scheme="slate"] .robotics-home {
+  background:
+    var(--robotics-hero-wave-dark) no-repeat bottom / 100% auto,
+    linear-gradient(145deg, #00695c 0%, #21465c 48%, #363949 100%);
+}
+
+.robotics-home__hero {
+  display: grid;
+  min-height: min(680px, 68vh);
+  margin: 0 0.8rem;
+  padding: 2.4rem 0 7rem;
+  color: var(--md-primary-bg-color);
+}
+
+.robotics-home__content {
+  z-index: 1;
+  max-width: 34rem;
+  align-self: center;
+}
+
+.robotics-home__eyebrow {
+  margin: 0 0 0.45rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.robotics-home h1 {
+  margin: 0 0 1rem;
+  color: currentcolor;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.robotics-home h1 span {
+  display: block;
+}
+
+.robotics-home__content > p:not(.robotics-home__eyebrow) {
+  max-width: 31rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.9rem;
+  line-height: 1.85;
+}
+
+.robotics-home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+}
+
+.robotics-home .md-button {
+  margin: 0;
+  color: var(--md-primary-bg-color);
+}
+
+.robotics-home .md-button:is(:focus, :hover) {
+  color: var(--md-accent-bg-color);
+  background-color: var(--md-accent-fg-color);
+  border-color: var(--md-accent-fg-color);
+}
+
+.robotics-home .md-button--primary {
+  color: #23636e;
+  background-color: var(--md-primary-bg-color);
+  border-color: var(--md-primary-bg-color);
+}
+
+.robotics-home__image {
+  display: none;
+}
+
+.robotics-home__image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 1.4rem 2rem rgba(0, 0, 0, 0.18));
+  animation: robotics-home-float 6s ease-in-out infinite;
+}
+
+.md-typeset .grid.cards {
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 59.984375em) {
+  .robotics-home__hero,
+  .robotics-home__content {
+    min-width: 0;
+  }
+
+  .robotics-home__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 10.5rem;
+  }
+
+  .robotics-home__actions .md-button {
+    min-width: 0;
+    padding-right: 0.65rem;
+    padding-left: 0.65rem;
+    text-align: center;
+  }
+
+  .robotics-home__actions .md-button:last-child {
+    grid-column: auto;
+  }
+
+  .robotics-home__content > p:not(.robotics-home__eyebrow) {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media screen and (min-width: 60em) {
+  .robotics-home__hero {
+    grid-template-columns: minmax(0, 0.62fr) minmax(24rem, 1fr);
+    align-items: center;
+    min-height: min(760px, 72vh);
+    padding-bottom: 10rem;
+  }
+
+  .robotics-home__image {
+    display: block;
+    order: 1;
+    width: min(44rem, 58vw);
+    transform: translateX(3rem);
+  }
+
+  .robotics-home__actions {
+    display: flex;
+    max-width: none;
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  .robotics-home__image {
+    transform: translateX(7rem);
+  }
+}
+
+@keyframes robotics-home-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-0.7rem);
+  }
 }
 
 .md-typeset details.robotics-catalog-section,

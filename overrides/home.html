@@ -1,0 +1,66 @@
+{% extends "main.html" %}
+
+{% block tabs %}
+  {{ super() }}
+
+  <style>
+    .md-header {
+      position: initial;
+    }
+
+    .md-main__inner {
+      margin-top: 0;
+    }
+
+    @media screen and (min-width: 60em) {
+      .md-sidebar--secondary {
+        display: none;
+      }
+    }
+
+    @media screen and (min-width: 76.25em) {
+      .md-sidebar--primary {
+        display: none;
+      }
+    }
+  </style>
+
+  <section class="robotics-home">
+    <div class="md-grid md-typeset">
+      <div class="robotics-home__hero">
+        <div class="robotics-home__image" aria-hidden="true">
+          <img
+            src="{{ 'assets/images/illustration.png' | url }}"
+            alt=""
+            width="1659"
+            height="1200"
+            draggable="false"
+          >
+        </div>
+
+        <div class="robotics-home__content">
+          <p class="robotics-home__eyebrow">Robotics Tutorial</p>
+          <h1>
+            <span>机器人体系化</span>
+            <span>教学文档</span>
+          </h1>
+          <p>
+            从数学基础、C++/ROS2、SLAM、规划控制、运动控制到具身智能，
+            构建一套可检索、可扩展、适合长期学习的机器人知识体系。
+          </p>
+          <div class="robotics-home__actions">
+            <a href="{{ 'catalog/' | url }}" class="md-button md-button--primary">
+              浏览目录
+            </a>
+            <a href="{{ 'project/' | url }}" class="md-button">
+              项目说明
+            </a>
+            <a href="https://github.com/Michael-Jetson/Robotics_Tutorial" class="md-button">
+              GitHub
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

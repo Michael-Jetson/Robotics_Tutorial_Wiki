@@ -47,7 +47,7 @@ COPY_EXTENSIONS = {
     ".webp",
     ".pdf",
 }
-SITE_ASSET_DIRS = ("stylesheets", "javascripts")
+SITE_ASSET_DIRS = ("stylesheets", "javascripts", "assets")
 
 
 def repo_url() -> str:
@@ -148,18 +148,13 @@ def copy_site_assets() -> None:
 def write_home(markdown_count: int, asset_count: int) -> None:
     (DOCS_DIR / "index.md").write_text(
         f"""---
+template: home.html
 hide:
   - navigation
   - toc
 ---
 
-# Robotics Tutorial
-
-系统化机器人学教学文档，覆盖从数学基础、工程实现到 SLAM、规划控制、运动控制与具身智能的完整学习路径。
-
-[开始学习](project.md){{ .md-button .md-button--primary }}
-[查看目录](catalog.md){{ .md-button }}
-[GitHub](https://github.com/Michael-Jetson/Robotics_Tutorial){{ .md-button }}
+# 学习模块
 
 <div class="grid cards" markdown>
 
