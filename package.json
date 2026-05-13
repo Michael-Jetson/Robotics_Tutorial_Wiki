@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "node scripts/edgeone-build.mjs",
+    "build:local": "EDGEONE_SKIP_PIP_INSTALL=1 node scripts/edgeone-build.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
