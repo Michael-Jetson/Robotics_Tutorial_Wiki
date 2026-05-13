@@ -114,6 +114,7 @@ extra:
     center: Robotics Tutorial
     firework_lines:
       - 达妙科技
+      - 发来贺电
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/Michael-Jetson/Robotics_Tutorial

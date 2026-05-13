@@ -13,6 +13,7 @@
     center: "Robotics Tutorial",
     firework_lines: [
       "达妙科技",
+      "发来贺电",
     ],
   };
   const MIXED_MODES = ["rocket", "banner", "couplet"];
@@ -116,9 +117,40 @@
       return;
     }
 
-    const side = Math.random() > 0.5 ? "right" : "left";
+    root.classList.remove("company-promo--outside-content-unavailable");
+
     const isRocket = root.classList.contains("company-promo--rocket");
-    const edge = Math.round(isRocket ? random(28, 88) : random(18, 74));
+    let side = Math.random() > 0.5 ? "right" : "left";
+    let edge = Math.round(isRocket ? random(18, 42) : random(18, 74));
+
+    if (isRocket) {
+      const content = document.querySelector(".md-content__inner") || document.querySelector(".md-content");
+      const contentRect = content?.getBoundingClientRect();
+      const rootWidth = root.offsetWidth || 320;
+      const gap = 18;
+
+      if (contentRect && contentRect.width > 0) {
+        const leftMaxEdge = contentRect.left - rootWidth - gap;
+        const rightMaxEdge = window.innerWidth - contentRect.right - rootWidth - gap;
+        const canUseLeft = leftMaxEdge >= 12;
+        const canUseRight = rightMaxEdge >= 12;
+
+        if (canUseLeft && canUseRight) {
+          side = Math.random() > 0.5 ? "right" : "left";
+        } else if (canUseRight) {
+          side = "right";
+        } else if (canUseLeft) {
+          side = "left";
+        } else {
+          side = rightMaxEdge >= leftMaxEdge ? "right" : "left";
+          root.classList.add("company-promo--outside-content-unavailable");
+        }
+
+        const maxEdge = side === "left" ? leftMaxEdge : rightMaxEdge;
+        edge = Math.round(maxEdge >= 12 ? random(12, Math.min(maxEdge, 72)) : 12);
+      }
+    }
+
     const header = document.querySelector(".md-header");
     const headerHeight = header?.getBoundingClientRect().height || 64;
     const rootHeight = root.offsetHeight || 184;
@@ -405,7 +437,13 @@
 
     window.clearTimeout(hideTimer);
     clearCanvasAnimation();
-    root.classList.remove("is-active", "company-promo--banner", "company-promo--couplet", "company-promo--rocket");
+    root.classList.remove(
+      "is-active",
+      "company-promo--banner",
+      "company-promo--couplet",
+      "company-promo--rocket",
+      "company-promo--outside-content-unavailable",
+    );
     root.classList.add(`company-promo--${mode}`);
     placeRoot();
     void root.offsetWidth;
