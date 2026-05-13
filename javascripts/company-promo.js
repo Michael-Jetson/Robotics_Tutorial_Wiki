@@ -122,6 +122,8 @@
     const isRocket = root.classList.contains("company-promo--rocket");
     let side = Math.random() > 0.5 ? "right" : "left";
     let edge = Math.round(isRocket ? random(18, 42) : random(18, 74));
+    const header = document.querySelector(".md-header");
+    const headerHeight = header?.getBoundingClientRect().height || 64;
 
     if (isRocket) {
       const content = document.querySelector(".md-content__inner") || document.querySelector(".md-content");
@@ -149,10 +151,18 @@
         const maxEdge = side === "left" ? leftMaxEdge : rightMaxEdge;
         edge = Math.round(maxEdge >= 12 ? random(12, Math.min(maxEdge, 72)) : 12);
       }
+
+      const top = Math.round(headerHeight + 10);
+      const height = Math.round(Math.max(window.innerHeight - top - 10, 420));
+
+      root.classList.toggle("company-promo--left", side === "left");
+      root.classList.toggle("company-promo--right", side === "right");
+      root.style.setProperty("--promo-edge", `${edge}px`);
+      root.style.setProperty("--promo-top", `${top}px`);
+      root.style.setProperty("--promo-height", `${height}px`);
+      return;
     }
 
-    const header = document.querySelector(".md-header");
-    const headerHeight = header?.getBoundingClientRect().height || 64;
     const rootHeight = root.offsetHeight || 184;
     const burstPadding = isRocket ? 28 : 116;
     const minTop = headerHeight + burstPadding;
@@ -216,13 +226,46 @@
     ];
     const start = performance.now();
     const animationDuration = seconds(config.duration_seconds, 7.2);
+    let flightPlan;
     let particles;
 
-    const createBurst = (width, height) => {
-      const centerX = width * 0.5;
-      const centerY = height * 0.34;
+    const createFlightPlan = (width, height) => {
+      const launchX = width * random(0.46, 0.54);
+      const launchY = height - 26;
+      const burstX = width * random(0.42, 0.58);
+      const burstY = random(Math.max(80, height * 0.12), Math.max(120, height * 0.42));
+
+      root.style.setProperty("--promo-text-top", `${Math.round(burstY)}px`);
+
+      return {
+        launchX,
+        launchY,
+        burstX,
+        burstY,
+        rocketStart: 0.68,
+        rocketDuration: 2.08,
+        burstAt: 2.88,
+      };
+    };
+
+    const ensureFlightPlan = (width, height) => {
+      if (!flightPlan || Math.abs(flightPlan.canvasHeight - height) > 2 || Math.abs(flightPlan.canvasWidth - width) > 2) {
+        flightPlan = {
+          ...createFlightPlan(width, height),
+          canvasWidth: width,
+          canvasHeight: height,
+        };
+        particles = undefined;
+      }
+
+      return flightPlan;
+    };
+
+    const createBurst = (plan) => {
+      const centerX = plan.burstX;
+      const centerY = plan.burstY;
       const result = [];
-      const total = 260;
+      const total = 280;
 
       for (let index = 0; index < total; index += 1) {
         const angle = (Math.PI * 2 * index) / total + random(-0.035, 0.035);
@@ -259,9 +302,9 @@
       return result;
     };
 
-    const drawIgnition = (time, width, height) => {
-      const baseX = width * 0.5;
-      const baseY = height - 44;
+    const drawIgnition = (time, plan) => {
+      const baseX = plan.launchX;
+      const baseY = plan.launchY;
       const sparkCount = 24;
 
       for (let index = 0; index < sparkCount; index += 1) {
@@ -274,45 +317,47 @@
       }
     };
 
-    const drawRocket = (time, width, height) => {
-      const progress = clamp((time - 0.68) / 1.42, 0, 1);
+    const drawRocket = (time, plan) => {
+      const progress = clamp((time - plan.rocketStart) / plan.rocketDuration, 0, 1);
       if (progress <= 0 || progress >= 1) {
         return;
       }
 
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const startX = width * 0.5;
-      const startY = height - 48;
-      const endX = width * 0.5 + Math.sin(time * 5.2) * 12;
-      const endY = height * 0.34;
+      const eased = 1 - Math.pow(1 - progress, 2.4);
+      const startX = plan.launchX;
+      const startY = plan.launchY;
+      const endX = plan.burstX;
+      const endY = plan.burstY;
+      const arc = Math.sin(progress * Math.PI) * 18;
       const x = startX + (endX - startX) * eased;
       const y = startY + (endY - startY) * eased;
+      const wobble = Math.sin(time * 7.5) * arc;
 
       context.save();
       context.globalCompositeOperation = "lighter";
       context.lineCap = "round";
-      for (let index = 0; index < 18; index += 1) {
-        const tail = index / 18;
-        const alpha = (1 - tail) * 0.58;
+      for (let index = 0; index < 28; index += 1) {
+        const tail = index / 28;
+        const alpha = (1 - tail) * 0.64;
         context.strokeStyle = `rgba(255, ${Math.round(218 - index * 5)}, 102, ${alpha})`;
-        context.lineWidth = Math.max(1.1, 7 - index * 0.28);
+        context.lineWidth = Math.max(0.9, 7.5 - index * 0.24);
         context.beginPath();
-        context.moveTo(x, y + index * 5.3);
-        context.lineTo(x + Math.sin(time * 12 + index) * 4, y + index * 9.4 + 15);
+        context.moveTo(x + wobble * 0.08, y + index * 5.8);
+        context.lineTo(x + Math.sin(time * 12 + index) * 5, y + index * 10.8 + 18);
         context.stroke();
       }
-      drawGlowDot(context, x, y, 20, "rgba(255, 219, 112, ALPHA)", 1);
-      drawGlowDot(context, x, y, 9, "rgba(255, 112, 78, ALPHA)", 1);
+      drawGlowDot(context, x + wobble * 0.08, y, 22, "rgba(255, 219, 112, ALPHA)", 1);
+      drawGlowDot(context, x + wobble * 0.08, y, 9, "rgba(255, 112, 78, ALPHA)", 1);
       context.restore();
     };
 
-    const drawBurst = (time, width, height) => {
-      const burstTime = time - 2.08;
+    const drawBurst = (time, plan) => {
+      const burstTime = time - plan.burstAt;
       if (burstTime < 0) {
         return;
       }
 
-      particles ||= createBurst(width, height);
+      particles ||= createBurst(plan);
       context.save();
       context.globalCompositeOperation = "lighter";
 
@@ -347,7 +392,7 @@
         context.strokeStyle = `rgba(255, 238, 178, ${0.82 * ringAlpha})`;
         context.lineWidth = 1.6;
         context.beginPath();
-        context.arc(width * 0.5, height * 0.34, 170 * burstTime, 0, Math.PI * 2);
+        context.arc(plan.burstX, plan.burstY, 170 * burstTime, 0, Math.PI * 2);
         context.stroke();
       }
 
@@ -357,14 +402,15 @@
     const draw = (now) => {
       const time = (now - start) / 1000;
       const { width, height } = sizeCanvas(canvas, context);
+      const plan = ensureFlightPlan(width, height);
       context.clearRect(0, 0, width, height);
 
       if (time < 1.1) {
-        drawIgnition(time, width, height);
+        drawIgnition(time, plan);
       }
 
-      drawRocket(time, width, height);
-      drawBurst(time, width, height);
+      drawRocket(time, plan);
+      drawBurst(time, plan);
 
       if (time < animationDuration && root?.classList.contains("is-active")) {
         canvasFrame = window.requestAnimationFrame(draw);
@@ -445,6 +491,7 @@
       "company-promo--outside-content-unavailable",
     );
     root.classList.add(`company-promo--${mode}`);
+    root.toggleAttribute("aria-hidden", mode === "rocket");
     placeRoot();
     void root.offsetWidth;
 

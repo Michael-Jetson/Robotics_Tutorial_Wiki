@@ -1,6 +1,8 @@
 .company-promo {
   --promo-edge: 2.5rem;
   --promo-top: 7rem;
+  --promo-height: 24rem;
+  --promo-text-top: 38%;
   position: fixed;
   z-index: 5;
   top: var(--promo-top);
@@ -25,8 +27,11 @@
 }
 
 .company-promo--rocket {
+  z-index: 1;
   width: clamp(240px, 18vw, 320px);
-  min-height: 380px;
+  height: var(--promo-height);
+  min-height: 420px;
+  pointer-events: none;
 }
 
 .company-promo--rocket.company-promo--outside-content-unavailable {
@@ -55,7 +60,7 @@
 
 .company-promo__ignition {
   position: absolute;
-  bottom: 1.85rem;
+  bottom: 0.5rem;
   left: 50%;
   width: 5.8rem;
   height: 3.2rem;
@@ -366,9 +371,7 @@
 }
 
 .company-promo--rocket .company-promo__close {
-  top: 1rem;
-  right: 1rem;
-  pointer-events: auto;
+  display: none;
 }
 
 .company-promo__banner,
@@ -446,7 +449,7 @@
 .company-promo--rocket .company-promo__firework {
   display: grid;
   position: absolute;
-  top: 45%;
+  top: var(--promo-text-top);
   right: 0;
   left: 0;
   min-height: 0;
@@ -488,15 +491,15 @@
 }
 
 .company-promo--rocket.is-active .company-promo__firework span {
-  animation: company-promo-firework-text 2.35s 3.05s cubic-bezier(0.16, 0.84, 0.22, 1) both;
+  animation: company-promo-firework-text 2.35s 3.28s cubic-bezier(0.16, 0.84, 0.22, 1) both;
 }
 
 .company-promo--rocket.is-active .company-promo__firework span:nth-child(1) {
-  animation-delay: 3.05s;
+  animation-delay: 3.28s;
 }
 
 .company-promo--rocket.is-active .company-promo__firework span:nth-child(2) {
-  animation-delay: 3.22s;
+  animation-delay: 3.46s;
 }
 
 .company-promo--rocket.is-active .company-promo__firework span:nth-child(3) {
