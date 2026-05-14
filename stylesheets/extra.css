@@ -13,6 +13,16 @@
   max-width: none;
 }
 
+@media screen and (min-width: 76.25em) {
+  .md-nav--primary
+    .md-nav__item--active
+    > .md-nav
+    > .md-nav__list:has(> .md-nav__item--section.md-nav__item--active)
+    > .md-nav__item--section.md-nav__item--nested:not(.md-nav__item--active) {
+    display: none;
+  }
+}
+
 .md-typeset h1 {
   font-weight: 700;
 }
