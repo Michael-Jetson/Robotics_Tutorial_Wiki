@@ -591,9 +591,9 @@ def select_catalog(source: Path) -> list[SummaryNode]:
         print(
             "SUMMARY.md appears stale "
             f"({missing_count}/{target_count} targets missing). "
-            "Building catalog from local files with unfinished summary placeholders."
+            "Preserving SUMMARY.md order and marking missing pages as unfinished."
         )
-        return merge_summary_placeholders(build_filesystem_catalog(), summary_catalog)
+        return summary_catalog
 
     return summary_catalog
 
