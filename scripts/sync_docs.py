@@ -148,6 +148,32 @@ def copy_site_assets() -> None:
 
 
 def write_home(markdown_count: int, asset_count: int) -> None:
+    module_links = {
+        "math": first_existing(
+            "01_数学/数学方向_总大纲.md",
+            "01_数学/数学方向总大纲.md",
+        ),
+        "foundation": first_existing(
+            "02_基础/基础方向_总大纲.md",
+            "02_基础/C++基础方向_总大纲.md",
+        ),
+        "slam": first_existing(
+            "03_SLAM/SLAM方向_总大纲.md",
+            "03_SLAM/slam理论.md",
+        ),
+        "mobile": first_existing(
+            "04_移动机器人规控/移动规控方向_总大纲.md",
+            "04_移动机器人规控/移动机器人规控方向_总大纲.md",
+            "04_移动机器人规控/README.md",
+        ),
+        "control": first_existing(
+            "05_运动控制/运动控制方向_总大纲.md",
+        ),
+        "embodied": first_existing(
+            "06_具身智能/具身智能方向_总大纲.md",
+        ),
+    }
+
     (DOCS_DIR / "index.md").write_text(
         f"""---
 template: home.html
@@ -164,37 +190,37 @@ hide:
 
     流形、李群、凸优化、最优控制、状态估计、强化学习理论。
 
-    [进入模块](01_数学/数学方向总大纲.md)
+    [进入模块]({module_links["math"]})
 
 -   **工程基础**
 
     C++ 进阶、并发、ROS2、CMake、工程化与机器人软件栈。
 
-    [进入模块](02_基础/C++基础方向_总大纲.md)
+    [进入模块]({module_links["foundation"]})
 
 -   **SLAM**
 
     SLAM 理论、核心库、系统精读、架构与工程化实践。
 
-    [进入模块](03_SLAM/slam理论.md)
+    [进入模块]({module_links["slam"]})
 
 -   **移动机器人规控**
 
     规划、控制、TAMP、不确定性、多机器人与横切专题。
 
-    [进入模块](04_移动机器人规控/移动机器人规控方向_总大纲.md)
+    [进入模块]({module_links["mobile"]})
 
 -   **运动控制**
 
     足式、机械臂、复合机器人、仿真与实时控制工程。
 
-    [进入模块](05_运动控制/运动控制方向_总大纲.md)
+    [进入模块]({module_links["control"]})
 
 -   **具身智能**
 
     大模型、世界模型、VLA、动作模仿与强化学习。
 
-    [进入模块](06_具身智能/具身智能方向_总大纲.md)
+    [进入模块]({module_links["embodied"]})
 
 </div>
 
@@ -210,6 +236,7 @@ hide:
 
 SUMMARY_HEADING = re.compile(r"^##\s+(.+?)\s*$")
 SUMMARY_ITEM = re.compile(r"^(\s*)\*\s+(?:\[([^\]]+)\]\(([^)]+)\)|(.+?))\s*$")
+NUMERIC_PREFIX = re.compile(r"^\d+[_\-\s]+")
 
 
 @dataclass
@@ -224,6 +251,44 @@ def link_target(target: str) -> str:
     if target == "README.md":
         return "project.md"
     return target
+
+
+def first_existing(*targets: str) -> str:
+    for target in targets:
+        if (DOCS_DIR / target).exists():
+            return target
+    return targets[0]
+
+
+def display_title(name: str) -> str:
+    if name == "README":
+        return "概览"
+
+    title = NUMERIC_PREFIX.sub("", name)
+    title = title.replace("_", " ").strip()
+    return title or name
+
+
+def sort_key(path: Path) -> tuple[int, int, str]:
+    stem = path.stem if path.is_file() else path.name
+
+    if path.name == "README.md":
+        priority = 0
+    elif "总大纲" in stem or "导读" in stem or "目录" in stem:
+        priority = 1
+    else:
+        priority = 2
+
+    number = 10_000
+    match = re.match(r"^(\d+)[_\-\s]+", stem)
+    if match:
+        number = int(match.group(1))
+
+    return priority, number, display_title(stem)
+
+
+def has_markdown(path: Path) -> bool:
+    return any(path.rglob("*.md"))
 
 
 def parse_summary(source: Path) -> list[SummaryNode]:
@@ -277,6 +342,107 @@ def parse_summary(source: Path) -> list[SummaryNode]:
             print(f"  ... {len(missing) - 50} more")
 
     return catalog
+
+
+def catalog_stats(items: list[SummaryNode]) -> tuple[int, int]:
+    target_count = 0
+    missing_count = 0
+
+    for item in items:
+        if item.target:
+            target_count += 1
+            if item.missing:
+                missing_count += 1
+
+        child_targets, child_missing = catalog_stats(item.children)
+        target_count += child_targets
+        missing_count += child_missing
+
+    return target_count, missing_count
+
+
+def build_filesystem_children(directory: Path) -> list[SummaryNode]:
+    children: list[SummaryNode] = []
+
+    files = [
+        path
+        for path in directory.iterdir()
+        if path.is_file() and path.suffix.lower() == ".md"
+    ]
+    directories = [
+        path
+        for path in directory.iterdir()
+        if path.is_dir()
+        and path.name not in SITE_ASSET_DIRS
+        and has_markdown(path)
+    ]
+
+    for path in sorted(files, key=sort_key):
+        relative = path.relative_to(DOCS_DIR).as_posix()
+        if relative in {"index.md", "catalog.md", "project.md"}:
+            continue
+
+        children.append(
+            SummaryNode(
+                title=display_title(path.stem),
+                target=relative,
+            )
+        )
+
+    for path in sorted(directories, key=sort_key):
+        directory_children = build_filesystem_children(path)
+        if not directory_children:
+            continue
+
+        children.append(
+            SummaryNode(
+                title=display_title(path.name),
+                children=directory_children,
+            )
+        )
+
+    return children
+
+
+def build_filesystem_catalog() -> list[SummaryNode]:
+    catalog: list[SummaryNode] = []
+
+    for path in sorted(DOCS_DIR.iterdir(), key=sort_key):
+        if not path.is_dir() or path.name in SITE_ASSET_DIRS or not has_markdown(path):
+            continue
+
+        children = build_filesystem_children(path)
+        if not children:
+            continue
+
+        catalog.append(
+            SummaryNode(
+                title=display_title(path.name),
+                children=children,
+            )
+        )
+
+    return catalog
+
+
+def select_catalog(source: Path) -> list[SummaryNode]:
+    summary_catalog = parse_summary(source)
+    target_count, missing_count = catalog_stats(summary_catalog)
+
+    if target_count == 0:
+        print("No usable SUMMARY.md targets found. Building catalog from local files.")
+        return build_filesystem_catalog()
+
+    missing_ratio = missing_count / target_count
+    if missing_ratio > 0.35:
+        print(
+            "SUMMARY.md appears stale "
+            f"({missing_count}/{target_count} targets missing). "
+            "Building catalog from local files."
+        )
+        return build_filesystem_catalog()
+
+    return summary_catalog
 
 
 def build_navigation(items: list[SummaryNode]) -> list[dict[str, object]]:
@@ -354,7 +520,7 @@ def main() -> None:
     markdown_count, asset_count = copy_docs(source)
     copy_site_assets()
     write_home(markdown_count, asset_count)
-    catalog = parse_summary(source)
+    catalog = select_catalog(source)
     nav = build_navigation(catalog)
     write_catalog(catalog)
     generate_config(nav)
