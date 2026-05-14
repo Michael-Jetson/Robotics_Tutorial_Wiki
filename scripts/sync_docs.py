@@ -5,6 +5,7 @@ import re
 import shutil
 import subprocess
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from html import escape
 from pathlib import Path
 
@@ -237,6 +238,29 @@ hide:
 SUMMARY_HEADING = re.compile(r"^##\s+(.+?)\s*$")
 SUMMARY_ITEM = re.compile(r"^(\s*)\*\s+(?:\[([^\]]+)\]\(([^)]+)\)|(.+?))\s*$")
 NUMERIC_PREFIX = re.compile(r"^\d+[_\-\s]+")
+CODE_PREFIX = re.compile(
+    r"^(?:"
+    r"B\d+(?:_[A-Z]+\d*[a-z]?|_[A-Z]+|_T\d+[a-z]?|_TR)?"
+    r"|Ch\d+"
+    r"|P\d+(?:-\d+)?"
+    r"|M\d+"
+    r"|D\d+"
+    r"|F\d+"
+    r"|S\d+[A-Z]?"
+    r"|Deep_D\d+[a-z]?"
+    r"|Survey_D\d+"
+    r")[_\-\s]+",
+    re.IGNORECASE,
+)
+GENERIC_PLACEHOLDER_KEYS = {
+    "readme",
+    "概览",
+    "目录",
+    "导读",
+    "导读与目录",
+    "整合导读",
+    "总大纲",
+}
 
 
 @dataclass
@@ -267,6 +291,19 @@ def display_title(name: str) -> str:
     title = NUMERIC_PREFIX.sub("", name)
     title = title.replace("_", " ").strip()
     return title or name
+
+
+def comparable_title(name: str) -> str:
+    title = Path(name).stem
+    if title == "README":
+        return "概览"
+
+    for _ in range(4):
+        title = NUMERIC_PREFIX.sub("", title)
+        title = CODE_PREFIX.sub("", title)
+
+    title = re.sub(r"[_\-\s·:：/（）(),，、]+", "", title)
+    return title.lower()
 
 
 def sort_key(path: Path) -> tuple[int, int, str]:
@@ -425,6 +462,122 @@ def build_filesystem_catalog() -> list[SummaryNode]:
     return catalog
 
 
+def collect_existing_keys(items: list[SummaryNode]) -> set[str]:
+    keys: set[str] = set()
+
+    for item in items:
+        if item.target and not item.missing:
+            keys.add(comparable_title(item.title))
+            keys.add(comparable_title(Path(item.target).stem))
+
+        keys.update(collect_existing_keys(item.children))
+
+    return keys
+
+
+def is_known_existing(key: str, existing_keys: set[str]) -> bool:
+    if key in existing_keys:
+        return True
+
+    if len(key) < 6:
+        return False
+
+    for existing in existing_keys:
+        if len(existing) < 6:
+            continue
+
+        if key in existing or existing in key:
+            return True
+
+        if SequenceMatcher(None, key, existing).ratio() >= 0.6:
+            return True
+
+    return False
+
+
+def module_key(title: str) -> str:
+    if "项目导航" in title:
+        return "project"
+    if "数学" in title:
+        return "math"
+    if "SLAM" in title.upper():
+        return "slam"
+    if "移动机器人" in title or "移动规控" in title:
+        return "mobile"
+    if "运动控制" in title:
+        return "control"
+    if "具身智能" in title:
+        return "embodied"
+    if "编程" in title or "基础" in title:
+        return "foundation"
+    return comparable_title(title)
+
+
+def filter_missing_placeholders(
+    items: list[SummaryNode],
+    existing_keys: set[str],
+) -> list[SummaryNode]:
+    placeholders: list[SummaryNode] = []
+
+    for item in items:
+        if item.children:
+            children = filter_missing_placeholders(item.children, existing_keys)
+            if children:
+                placeholders.append(
+                    SummaryNode(
+                        title=item.title,
+                        children=children,
+                    )
+                )
+            continue
+
+        if not item.target or not item.missing:
+            continue
+
+        key = comparable_title(item.title)
+        if key in GENERIC_PLACEHOLDER_KEYS or is_known_existing(key, existing_keys):
+            continue
+
+        placeholders.append(
+            SummaryNode(
+                title=item.title,
+                target=item.target,
+                missing=True,
+            )
+        )
+
+    return placeholders
+
+
+def merge_summary_placeholders(
+    catalog: list[SummaryNode],
+    summary_catalog: list[SummaryNode],
+) -> list[SummaryNode]:
+    existing_keys = collect_existing_keys(catalog)
+    sections = {module_key(item.title): item for item in catalog}
+
+    for summary_section in summary_catalog:
+        placeholders = filter_missing_placeholders(summary_section.children, existing_keys)
+        if not placeholders:
+            continue
+
+        key = module_key(summary_section.title)
+        target_section = sections.get(key)
+        placeholder_group = SummaryNode(title="敬请期待", children=placeholders)
+
+        if target_section:
+            target_section.children.append(placeholder_group)
+        else:
+            catalog.append(
+                SummaryNode(
+                    title=summary_section.title,
+                    children=[placeholder_group],
+                )
+            )
+
+    return catalog
+
+
 def select_catalog(source: Path) -> list[SummaryNode]:
     summary_catalog = parse_summary(source)
     target_count, missing_count = catalog_stats(summary_catalog)
@@ -438,9 +591,9 @@ def select_catalog(source: Path) -> list[SummaryNode]:
         print(
             "SUMMARY.md appears stale "
             f"({missing_count}/{target_count} targets missing). "
-            "Building catalog from local files."
+            "Building catalog from local files with unfinished summary placeholders."
         )
-        return build_filesystem_catalog()
+        return merge_summary_placeholders(build_filesystem_catalog(), summary_catalog)
 
     return summary_catalog
 
