@@ -3,6 +3,8 @@
   --md-accent-fg-color: #f57c00;
   --robotics-page-max-width: 1680px;
   --robotics-hero-solid: #f7fbfa;
+  --robotics-sidebar-primary-width: 12.1rem;
+  --robotics-sidebar-secondary-width: 12.1rem;
 }
 
 .md-grid {
@@ -11,6 +13,45 @@
 
 .md-content {
   max-width: none;
+}
+
+@media screen and (min-width: 100em) {
+  :root {
+    --robotics-page-max-width: 1880px;
+    --robotics-sidebar-primary-width: clamp(14.5rem, 15vw, 18rem);
+    --robotics-sidebar-secondary-width: clamp(15rem, 16vw, 20rem);
+  }
+
+  .md-sidebar--primary {
+    width: var(--robotics-sidebar-primary-width);
+  }
+
+  .md-sidebar--secondary {
+    width: var(--robotics-sidebar-secondary-width);
+  }
+
+  [dir="ltr"] .md-sidebar .md-sidebar__inner,
+  [dir="rtl"] .md-sidebar .md-sidebar__inner {
+    padding-inline: 0.2rem 0.6rem;
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap,
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    margin-inline: 0.2rem;
+  }
+
+  .md-sidebar--primary .md-nav,
+  .md-sidebar--secondary .md-nav {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 125em) {
+  :root {
+    --robotics-page-max-width: 2240px;
+    --robotics-sidebar-primary-width: clamp(18rem, 13vw, 21rem);
+    --robotics-sidebar-secondary-width: clamp(18rem, 16vw, 24rem);
+  }
 }
 
 @media screen and (min-width: 76.25em) {
