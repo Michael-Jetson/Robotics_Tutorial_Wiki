@@ -7,7 +7,7 @@ import subprocess
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from html import escape
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import yaml
 
@@ -149,28 +149,31 @@ def copy_site_assets() -> None:
 
 
 def write_home(markdown_count: int, asset_count: int) -> None:
+    def module_link(*targets: str) -> str:
+        return public_page_url(first_existing(*targets))
+
     module_links = {
-        "math": first_existing(
+        "math": module_link(
             "01_数学/数学方向_总大纲.md",
             "01_数学/数学方向总大纲.md",
         ),
-        "foundation": first_existing(
+        "foundation": module_link(
             "02_基础/基础方向_总大纲.md",
             "02_基础/C++基础方向_总大纲.md",
         ),
-        "slam": first_existing(
+        "slam": module_link(
             "03_SLAM/SLAM方向_总大纲.md",
             "03_SLAM/slam理论.md",
         ),
-        "mobile": first_existing(
+        "mobile": module_link(
             "04_移动机器人规控/移动规控方向_总大纲.md",
             "04_移动机器人规控/移动机器人规控方向_总大纲.md",
             "04_移动机器人规控/README.md",
         ),
-        "control": first_existing(
+        "control": module_link(
             "05_运动控制/运动控制方向_总大纲.md",
         ),
-        "embodied": first_existing(
+        "embodied": module_link(
             "06_具身智能/具身智能方向_总大纲.md",
         ),
     }
@@ -282,6 +285,24 @@ def first_existing(*targets: str) -> str:
         if (DOCS_DIR / target).exists():
             return target
     return targets[0]
+
+
+def public_page_url(target: str) -> str:
+    target = link_target(target)
+    path = PurePosixPath(target)
+
+    if path.suffix.lower() != ".md":
+        return target
+
+    if path.name in {"README.md", "index.md"}:
+        page = path.parent.as_posix()
+    else:
+        page = path.with_suffix("").as_posix()
+
+    if page in {"", "."}:
+        return "./"
+
+    return f"{page}/"
 
 
 def display_title(name: str) -> str:
