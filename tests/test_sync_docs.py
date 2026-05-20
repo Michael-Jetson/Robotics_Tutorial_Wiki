@@ -28,6 +28,18 @@ def leaf_titles(items):
 
 
 class SelectCatalogTests(unittest.TestCase):
+    def test_public_page_url_uses_built_page_paths(self):
+        self.assertEqual(
+            "01_数学/数学方向_总大纲/",
+            sync_docs.public_page_url("01_数学/数学方向_总大纲.md"),
+        )
+        self.assertEqual(
+            "04_移动机器人规控/",
+            sync_docs.public_page_url("04_移动机器人规控/README.md"),
+        )
+        self.assertEqual("project/", sync_docs.public_page_url("project.md"))
+        self.assertEqual("catalog/", sync_docs.public_page_url("catalog/"))
+
     def test_preserves_summary_order_when_many_targets_are_missing(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
