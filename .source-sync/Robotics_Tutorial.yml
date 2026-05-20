@@ -1,0 +1,7 @@
+source_repository: Michael-Jetson/Robotics_Tutorial
+source_branch: main
+source_sha: edd9598788b95e463de639b515a34ca6de6359d4
+source_run_id: 26158670854
+target_branch: edgeone
+deploy_target: EdgeOne
+synced_at: 2026-05-20T11:09:34Z
