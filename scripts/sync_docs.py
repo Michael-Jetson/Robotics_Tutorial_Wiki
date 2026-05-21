@@ -637,19 +637,50 @@ def build_navigation(items: list[SummaryNode]) -> list[dict[str, object]]:
     return nav
 
 
+def missing_leaf_totals(item: SummaryNode) -> tuple[int, int]:
+    if item.target:
+        return 1, 1 if item.missing else 0
+
+    total = 0
+    missing = 0
+    for child in item.children:
+        child_total, child_missing = missing_leaf_totals(child)
+        total += child_total
+        missing += child_missing
+
+    return total, missing
+
+
+def all_leaf_pages_missing(item: SummaryNode) -> bool:
+    total, missing = missing_leaf_totals(item)
+    return total > 0 and total == missing
+
+
+def catalog_missing_label(title: str) -> str:
+    return (
+        f'<span class="robotics-catalog-missing">{escape(title)}'
+        ' <span class="robotics-catalog-badge">敬请期待</span></span>'
+    )
+
+
 def render_catalog_items(items: list[SummaryNode], level: int = 0) -> list[str]:
     lines: list[str] = []
     details_class = "robotics-catalog-section" if level == 0 else "robotics-catalog-group"
 
     for item in items:
         if item.children:
+            summary_title = (
+                catalog_missing_label(item.title)
+                if level > 0 and item.title != "敬请期待" and all_leaf_pages_missing(item)
+                else escape(item.title)
+            )
             details_attrs = f'class="{details_class}" markdown'
             if level == 0:
                 details_attrs += " open"
             lines.extend(
                 [
                     f"<details {details_attrs}>",
-                    f"<summary>{escape(item.title)}</summary>",
+                    f"<summary>{summary_title}</summary>",
                     "",
                 ]
             )
@@ -658,11 +689,7 @@ def render_catalog_items(items: list[SummaryNode], level: int = 0) -> list[str]:
             continue
 
         if item.target and item.missing:
-            title = escape(item.title)
-            lines.append(
-                f'- <span class="robotics-catalog-missing">{title}'
-                ' <span class="robotics-catalog-badge">敬请期待</span></span>'
-            )
+            lines.append(f"- {catalog_missing_label(item.title)}")
             continue
 
         if item.target:

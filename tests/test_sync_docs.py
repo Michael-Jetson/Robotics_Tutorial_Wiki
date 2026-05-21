@@ -40,6 +40,54 @@ class SelectCatalogTests(unittest.TestCase):
         self.assertEqual("project/", sync_docs.public_page_url("project.md"))
         self.assertEqual("catalog/", sync_docs.public_page_url("catalog/"))
 
+    def test_catalog_marks_group_when_all_child_pages_are_missing(self):
+        catalog = [
+            sync_docs.SummaryNode(
+                title="运动控制",
+                children=[
+                    sync_docs.SummaryNode(
+                        title="20_机械臂",
+                        children=[
+                            sync_docs.SummaryNode("P01", target="missing/P01.md", missing=True),
+                            sync_docs.SummaryNode("M01", target="missing/M01.md", missing=True),
+                        ],
+                    )
+                ],
+            )
+        ]
+
+        rendered = "\n".join(sync_docs.render_catalog_items(catalog))
+
+        self.assertIn(
+            '<summary><span class="robotics-catalog-missing">20_机械臂'
+            ' <span class="robotics-catalog-badge">敬请期待</span></span></summary>',
+            rendered,
+        )
+
+    def test_catalog_does_not_mark_group_when_any_child_page_exists(self):
+        catalog = [
+            sync_docs.SummaryNode(
+                title="运动控制",
+                children=[
+                    sync_docs.SummaryNode(
+                        title="20_机械臂",
+                        children=[
+                            sync_docs.SummaryNode("P01", target="missing/P01.md", missing=True),
+                            sync_docs.SummaryNode("M01", target="exists/M01.md", missing=False),
+                        ],
+                    )
+                ],
+            )
+        ]
+
+        rendered = "\n".join(sync_docs.render_catalog_items(catalog))
+
+        self.assertIn("<summary>20_机械臂</summary>", rendered)
+        self.assertNotIn(
+            '<summary><span class="robotics-catalog-missing">20_机械臂',
+            rendered,
+        )
+
     def test_preserves_summary_order_when_many_targets_are_missing(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
