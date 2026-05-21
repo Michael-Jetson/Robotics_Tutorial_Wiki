@@ -1,5 +1,5 @@
 site_name: Robotics Tutorial
-site_description: 系统化机器人学教学文档，覆盖数学、工程基础、SLAM、规划控制、运动控制与具身智能。
+site_description: 系统化机器人学教学文档，覆盖数学、C++基础与进阶、SLAM、规划控制、运动控制与具身智能。
 site_author: Pengfei Guo
 repo_name: Michael-Jetson/Robotics_Tutorial
 repo_url: https://github.com/Michael-Jetson/Robotics_Tutorial

@@ -22,6 +22,7 @@ INCLUDE_ROOT_FILES = {"README.md", "LICENSE"}
 INCLUDE_TOP_DIRS = {
     "00_项目导航",
     "01_数学",
+    "02_C++基础与进阶",
     "02_基础",
     "03_SLAM",
     "04_移动机器人规控",
@@ -158,6 +159,7 @@ def write_home(markdown_count: int, asset_count: int) -> None:
             "01_数学/数学方向总大纲.md",
         ),
         "foundation": module_link(
+            "02_C++基础与进阶/C++基础与进阶方向_总大纲.md",
             "02_基础/基础方向_总大纲.md",
             "02_基础/C++基础方向_总大纲.md",
         ),
@@ -196,7 +198,7 @@ hide:
 
     [进入模块]({module_links["math"]})
 
--   **工程基础**
+-   **C++基础与进阶**
 
     C++ 进阶、并发、ROS2、CMake、工程化与机器人软件栈。
 
