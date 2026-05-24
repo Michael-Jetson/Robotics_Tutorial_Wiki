@@ -50,6 +50,7 @@ plugins:
       lang:
         - zh
         - en
+      indexing: sections
   - glightbox:
       touchNavigation: true
       loop: false
