@@ -139,3 +139,19 @@ if (process.env.EDGEONE_SKIP_PIP_INSTALL !== "1") {
 
 run(python, ["scripts/sync_docs.py"]);
 run(python, ["-m", "mkdocs", "build", "-f", "mkdocs.generated.yml"]);
+
+// Trim search_index.json to fit EdgeOne's 25 MiB single-file limit.
+// Strip the "text" field from each entry, keeping only titles and locations.
+const searchIndexPath = "site/search/search_index.json";
+if (existsSync(searchIndexPath)) {
+  const { readFileSync } = await import("node:fs");
+  const raw = JSON.parse(readFileSync(searchIndexPath, "utf-8"));
+  if (raw.docs) {
+    for (const doc of raw.docs) {
+      doc.text = "";
+    }
+    writeFileSync(searchIndexPath, JSON.stringify(raw));
+    const sizeMB = (Buffer.byteLength(JSON.stringify(raw)) / 1024 / 1024).toFixed(1);
+    console.log(`Trimmed search_index.json to ${sizeMB} MiB (stripped text field)`);
+  }
+}
