@@ -3,8 +3,8 @@
   --md-accent-fg-color: #f57c00;
   --robotics-page-max-width: 1680px;
   --robotics-hero-solid: #f7fbfa;
-  --robotics-sidebar-primary-width: 12.1rem;
-  --robotics-sidebar-secondary-width: 12.1rem;
+  --robotics-sidebar-primary-min-width: 12.1rem;
+  --robotics-sidebar-secondary-min-width: 12.1rem;
 }
 
 .md-grid {
@@ -18,16 +18,20 @@
 @media screen and (min-width: 100em) {
   :root {
     --robotics-page-max-width: 1880px;
-    --robotics-sidebar-primary-width: clamp(14.5rem, 15vw, 18rem);
-    --robotics-sidebar-secondary-width: clamp(15rem, 16vw, 20rem);
+    --robotics-sidebar-primary-max-width: min(32rem, 30vw);
+    --robotics-sidebar-secondary-max-width: min(24rem, 24vw);
   }
 
   .md-sidebar--primary {
-    width: var(--robotics-sidebar-primary-width);
+    inline-size: fit-content;
+    min-inline-size: var(--robotics-sidebar-primary-min-width);
+    max-inline-size: var(--robotics-sidebar-primary-max-width);
   }
 
   .md-sidebar--secondary {
-    width: var(--robotics-sidebar-secondary-width);
+    inline-size: fit-content;
+    min-inline-size: var(--robotics-sidebar-secondary-min-width);
+    max-inline-size: var(--robotics-sidebar-secondary-max-width);
   }
 
   [dir="ltr"] .md-sidebar .md-sidebar__inner,
@@ -38,19 +42,31 @@
   .md-sidebar--primary .md-sidebar__scrollwrap,
   .md-sidebar--secondary .md-sidebar__scrollwrap {
     margin-inline: 0.2rem;
+    scrollbar-gutter: stable;
   }
 
-  .md-sidebar--primary .md-nav,
+  .md-sidebar--primary .md-sidebar__scrollwrap,
+  .md-sidebar--primary .md-sidebar__inner,
+  .md-sidebar--primary .md-nav {
+    inline-size: max-content;
+    min-inline-size: var(--robotics-sidebar-primary-min-width);
+    max-inline-size: var(--robotics-sidebar-primary-max-width);
+  }
+
+  .md-sidebar--secondary .md-sidebar__scrollwrap,
+  .md-sidebar--secondary .md-sidebar__inner,
   .md-sidebar--secondary .md-nav {
-    width: 100%;
+    inline-size: max-content;
+    min-inline-size: var(--robotics-sidebar-secondary-min-width);
+    max-inline-size: var(--robotics-sidebar-secondary-max-width);
   }
 }
 
 @media screen and (min-width: 125em) {
   :root {
     --robotics-page-max-width: 2240px;
-    --robotics-sidebar-primary-width: clamp(18rem, 13vw, 21rem);
-    --robotics-sidebar-secondary-width: clamp(18rem, 16vw, 24rem);
+    --robotics-sidebar-primary-max-width: min(38rem, 32vw);
+    --robotics-sidebar-secondary-max-width: min(28rem, 26vw);
   }
 }
 
@@ -989,6 +1005,16 @@
   font-size: 0.62rem;
   font-weight: 700;
   line-height: 1;
+}
+
+/* GitHub repo source widget: wider area so name + stats fit */
+.md-source {
+  max-width: 16rem;
+  min-width: 12rem;
+}
+
+.md-source__repository {
+  max-width: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
